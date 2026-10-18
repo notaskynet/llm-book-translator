@@ -1,0 +1,64 @@
+{
+  "title": "Übersetzen",
+  "drop": {
+    "hint": "Eine .txt- oder .srt-Datei hierher ziehen oder zum Auswählen klicken",
+    "active": "Datei ablegen, um sie zu laden",
+    "unsupported": "Derzeit werden nur .txt- und .srt-Dateien unterstützt"
+  },
+  "source": "Ausgangssprache",
+  "target": "Zielsprache",
+  "options": "Optionen",
+  "bilingual": "Zweisprachige Ausgabe (Original und Übersetzung)",
+  "maxTokens": "Max. Tokens pro Abschnitt",
+  "parallel": "Parallele Anfragen",
+  "start": "Übersetzen",
+  "stop": "Stopp",
+  "stopping": "Stoppt, sobald die laufenden Anfragen beendet sind…",
+  "download": "Herunterladen",
+  "another": "Weitere Datei übersetzen",
+  "needConnection": "Gib zuerst im Bereich Verbindung deinen API-Schlüssel ein und wähle ein Modell.",
+  "progress": "{{done}} von {{total}} Abschnitten",
+  "failed": "{{count}} fehlgeschlagen",
+  "status": {
+    "running": "{{name}} wird übersetzt…",
+    "completed": "Fertig. Deine Übersetzung ist bereit.",
+    "partial": "Fertig, aber {{count}} Abschnitte sind unübersetzt. Setze fort, um sie erneut zu versuchen.",
+    "pausedInterrupted": "Gestoppt. Du kannst diese Übersetzung jederzeit fortsetzen.",
+    "pausedRateLimit": "Das Ratenlimit des Anbieters wurde erreicht. Setze in ein paar Minuten fort.",
+    "failed": "Die Übersetzung konnte nicht abgeschlossen werden.",
+    "reason": {
+      "prepare_failed": "Die Datei konnte nicht gelesen werden.",
+      "no_units": "In der Datei wurde kein übersetzbarer Text gefunden.",
+      "reconstruct_failed": "Die Ausgabedatei konnte nicht erstellt werden."
+    }
+  },
+  "resume": {
+    "title": "Unfertige Übersetzungen",
+    "action": "Fortsetzen",
+    "discard": "Verwerfen",
+    "state": {
+      "running": "Unterbrochen",
+      "paused": "Pausiert",
+      "partial": "Teilweise"
+    }
+  },
+  "log": {
+    "title": "Aktivität",
+    "checkpoint_resumed": "Fortsetzen ab gespeichertem Stand",
+    "unit_failed": "Ein Abschnitt konnte nicht übersetzt werden und wird beim Fortsetzen erneut versucht",
+    "unit_error": "Bei einem Abschnitt ist ein unerwarteter Fehler aufgetreten",
+    "unit_validation_failed": "Die Antwort wirkte unvollständig, neuer Versuch",
+    "unit_validation_exhausted": "Die Antwort blieb unvollständig; der Abschnitt wird als fehlgeschlagen markiert",
+    "empty_llm_response": "Das Modell hat nichts zurückgegeben (vermutlich eine Ablehnung oder ein Inhaltsfilter)",
+    "output_truncated": "Dem Modell gingen die Ausgabe-Tokens aus; versuche eine kleinere Abschnittsgröße",
+    "unclosed_translation_tag": "Die Antwort des Modells wurde abgeschnitten",
+    "context_overflow_retry": "Der Text ist für das Modell zu lang und wird aufgeteilt",
+    "context_overflow_fatal": "Der Text ist für das Modell auch nach dem Aufteilen zu lang",
+    "llm_key_rotated": "Ratenlimit erreicht, wechsle zum nächsten API-Schlüssel",
+    "llm_rate_limit": "Ratenlimit erreicht, warte vor dem nächsten Versuch",
+    "llm_request_failed": "Eine Anfrage ist fehlgeschlagen",
+    "translation_interrupted": "Von dir gestoppt",
+    "rate_limited": "Pausiert wegen des Ratenlimits des Anbieters",
+    "using_raw_response_fallback": "Das Modell hat das Ausgabeformat ignoriert; seine Rohantwort wird verwendet"
+  }
+}

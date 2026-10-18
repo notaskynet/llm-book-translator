@@ -1,0 +1,135 @@
+import { expect, test, type Page, type Route } from '@playwright/test';
+
+const BASE = 'https://llm.test/v1';
+const sentence = 'The traveller walked slowly along the old road. ';
+const book = Array.from({ length: 12 }, (_, i) => `Paragraph ${i}. ${sentence.repeat(8)}`).join('\n\n');
+
+/** Mocks the OpenAI-compatible API: echoes each source text back prefixed with "FR ". */
+async function mockLlm(page: Page, opts: { delayMs?: number; onRequest?: () => void } = {}) {
+  const seen: string[] = [];
+  await page.route(`${BASE}/models`, (route) =>
+    route.fulfill({ json: { object: 'list', data: [{ id: 'mock-model', object: 'model' }] }, headers: cors }));
+  await page.route(`${BASE}/chat/completions`, async (route: Route) => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    const body = route.request().postDataJSON() as { messages: { content: string }[] };
+    const user = body.messages.at(-1)!.content;
+    const source = /<SOURCE_TEXT>\n([\s\S]*?)\n<\/SOURCE_TEXT>/.exec(user)?.[1] ?? '';
+    seen.push(source);
+    opts.onRequest?.();
+    if (opts.delayMs) await new Promise((r) => setTimeout(r, opts.delayMs));
+    await route.fulfill({
+      headers: cors,
+      json: {
+        id: 'x', object: 'chat.completion', created: 0, model: 'mock-model',
+        choices: [{ index: 0, finish_reason: 'stop', message: { role: 'assistant', content: `<TRANSLATION>FR ${source}</TRANSLATION>` } }],
+        usage: { prompt_tokens: 10, completion_tokens: 10, total_tokens: 20 },
+      },
+    });
+  });
+  // Preflight for the cross-origin fetch the SDK makes.
+  await page.route(`${BASE}/**`, (route) => (route.request().method() === 'OPTIONS' ? route.fulfill({ status: 204, headers: cors }) : route.fallback()));
+  return seen;
+}
+
+const cors = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-headers': '*',
+  'access-control-allow-methods': '*',
+};
+
+async function connect(page: Page) {
+  await page.goto('/');
+  await page.getByLabel('Base URL').fill(BASE);
+  await page.getByLabel('API key').fill('test-key-not-real');
+  await page.getByRole('button', { name: 'Load models' }).click();
+  await expect(page.getByRole('status')).toContainText('1 models available');
+  await page.getByLabel('Model').fill('mock-model');
+}
+
+const file = (name = 'book.txt', text = book) => ({ name, mimeType: 'text/plain', buffer: Buffer.from(text) });
+
+test('connects, translates a TXT file and downloads the result', async ({ page }) => {
+  const seen = await mockLlm(page);
+  await connect(page);
+
+  await page.locator('input[type=file]').setInputFiles(file());
+  await expect(page.getByRole('status').last()).toContainText('Done');
+
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download' }).click();
+  const dl = await download;
+  expect(dl.suggestedFilename()).toBe('book (French).txt');
+  const text = (await import('node:fs')).readFileSync((await dl.path())!, 'utf8');
+  // The mock prefixes every chunk once, so the number of prefixes equals the number of requests.
+  expect(text.match(/FR /g)).toHaveLength(seen.length);
+  expect(text).toContain('Paragraph 11.');
+  expect(seen.length).toBeGreaterThan(1);
+});
+
+test('rejects unsupported files', async ({ page }) => {
+  await mockLlm(page);
+  await connect(page);
+  await page.locator('input[type=file]').setInputFiles({ name: 'cover.png', mimeType: 'image/png', buffer: Buffer.from('x') });
+  await expect(page.getByRole('alert')).toContainText('.txt and .srt');
+});
+
+test('shows a clear error for a wrong API key', async ({ page }) => {
+  await page.route(`${BASE}/**`, (route) =>
+    route.request().method() === 'OPTIONS'
+      ? route.fulfill({ status: 204, headers: cors })
+      : route.fulfill({ status: 401, headers: cors, json: { error: { message: 'Invalid API key' } } }));
+  await page.goto('/');
+  await page.getByLabel('Base URL').fill(BASE);
+  await page.getByLabel('API key').fill('bad');
+  await page.getByRole('button', { name: 'Load models' }).click();
+  await expect(page.getByRole('alert')).toContainText('Invalid API key');
+});
+
+test('switching the UI language updates strings without a reload', async ({ page }) => {
+  await mockLlm(page);
+  await page.goto('/');
+  await page.evaluate(() => { (window as any).__noReload = true; });
+  await expect(page.getByRole('heading', { name: 'Translate' })).toBeVisible();
+
+  await page.getByLabel('Language', { exact: true }).selectOption('fr');
+  await expect(page.getByRole('heading', { name: 'Traduire' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Connexion' })).toBeVisible();
+  expect(await page.evaluate(() => (window as any).__noReload)).toBe(true);
+
+  await page.getByLabel('Langue', { exact: true }).selectOption('ja');
+  await expect(page.getByRole('heading', { name: '翻訳' })).toBeVisible();
+});
+
+test('stops, survives a reload and resumes only the remaining units', async ({ page }) => {
+  let requests = 0;
+  const seen = await mockLlm(page, { delayMs: 500, onRequest: () => requests++ });
+  await connect(page);
+
+  // One request at a time, so stopping after the first leaves most of the book pending.
+  await page.getByText('Options').click();
+  await page.getByLabel('Parallel requests').fill('1');
+
+  await page.locator('input[type=file]').setInputFiles(file());
+  await expect.poll(() => requests).toBeGreaterThan(0);
+  await page.getByRole('button', { name: 'Stop' }).click();
+  await expect(page.getByRole('status').last()).toContainText('Stopped');
+  const firstRun = seen.length;
+  expect(firstRun).toBeGreaterThan(0);
+
+  // A page reload loses all in-memory state; only IndexedDB survives.
+  await page.reload();
+  await expect(page.getByText('Unfinished translations')).toBeVisible();
+  await expect(page.getByText('book.txt')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Resume' }).click();
+  await expect(page.getByRole('status').last()).toContainText('Done');
+  // No unit is translated twice: first run + second run covers each chunk exactly once.
+  expect(new Set(seen).size).toBe(seen.length);
+
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download' }).click();
+  const text = (await import('node:fs')).readFileSync((await (await download).path())!, 'utf8');
+  expect(text).toContain('FR Paragraph 0.');
+  expect(text).toContain('Paragraph 11.');
+  expect(text.match(/FR /g)).toHaveLength(seen.length);
+});

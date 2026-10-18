@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LOCALES } from './i18n';
 import { ConnectionPanel } from './ui/ConnectionPanel';
+import { TranslatePanel } from './ui/TranslatePanel';
 
 export function App() {
   const { t, i18n } = useTranslation();
@@ -13,6 +14,7 @@ export function App() {
           <label className="flex items-center gap-2 text-sm">
             {t('language')}
             <select
+              aria-label={t('language')}
               className="rounded border px-2 py-1"
               value={i18n.resolvedLanguage}
               onChange={(e) => void i18n.changeLanguage(e.target.value)}
@@ -22,6 +24,7 @@ export function App() {
           </label>
         </header>
         <ConnectionPanel />
+        <TranslatePanel />
       </main>
     </Suspense>
   );

@@ -1,0 +1,64 @@
+{
+  "title": "翻译",
+  "drop": {
+    "hint": "将 .txt 或 .srt 文件拖到此处，或点击选择",
+    "active": "松开以加载文件",
+    "unsupported": "目前仅支持 .txt 和 .srt 文件"
+  },
+  "source": "源语言",
+  "target": "目标语言",
+  "options": "选项",
+  "bilingual": "双语输出（原文与译文）",
+  "maxTokens": "每段最大 token 数",
+  "parallel": "并行请求数",
+  "start": "翻译",
+  "stop": "停止",
+  "stopping": "当前请求完成后停止…",
+  "download": "下载",
+  "another": "翻译另一个文件",
+  "needConnection": "请先在“连接”部分输入 API 密钥并选择模型。",
+  "progress": "{{done}} / {{total}} 段",
+  "failed": "{{count}} 段失败",
+  "status": {
+    "running": "正在翻译 {{name}}…",
+    "completed": "完成。译文已就绪。",
+    "partial": "已完成，但有 {{count}} 段未翻译。继续以重试这些段落。",
+    "pausedInterrupted": "已停止。您可以随时继续此翻译。",
+    "pausedRateLimit": "已达到服务商的速率限制。请几分钟后继续。",
+    "failed": "翻译未能完成。",
+    "reason": {
+      "prepare_failed": "无法读取该文件。",
+      "no_units": "文件中未找到可翻译的文本。",
+      "reconstruct_failed": "无法生成输出文件。"
+    }
+  },
+  "resume": {
+    "title": "未完成的翻译",
+    "action": "继续",
+    "discard": "丢弃",
+    "state": {
+      "running": "已中断",
+      "paused": "已暂停",
+      "partial": "部分完成"
+    }
+  },
+  "log": {
+    "title": "活动",
+    "checkpoint_resumed": "从已保存的进度继续",
+    "unit_failed": "有一段无法翻译，继续时将重试",
+    "unit_error": "某一段发生了意外错误",
+    "unit_validation_failed": "回答似乎不完整，正在重试",
+    "unit_validation_exhausted": "回答仍不完整，该段已标记为失败",
+    "empty_llm_response": "模型没有返回任何内容（可能是拒绝回答或内容过滤）",
+    "output_truncated": "模型的输出 token 已用尽，请尝试更小的分段大小",
+    "unclosed_translation_tag": "模型的回答被截断",
+    "context_overflow_retry": "文本对该模型来说太长，正在拆分",
+    "context_overflow_fatal": "即使拆分后文本对该模型仍然太长",
+    "llm_key_rotated": "达到速率限制，正在切换到下一个 API 密钥",
+    "llm_rate_limit": "达到速率限制，等待后重试",
+    "llm_request_failed": "请求失败",
+    "translation_interrupted": "已被您停止",
+    "rate_limited": "因服务商的速率限制而暂停",
+    "using_raw_response_fallback": "模型忽略了输出格式，正在使用其原始回答"
+  }
+}

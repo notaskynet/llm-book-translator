@@ -30,3 +30,11 @@ export const DEFAULT_MAX_TOKENS_PER_CHUNK = 450;
 export const MAX_CHUNK_REDUCTION_ATTEMPTS = 3;
 export const CHUNK_REDUCTION_FACTOR = 0.6;
 export const MIN_CHUNK_CHARACTERS = 200;
+
+export const SOFT_LIMIT_RATIO = 0.8;
+export const SRT_LINES_PER_BLOCK = 10;
+/** Extra attempts when a unit fails adapter validation (e.g. SRT markers dropped). */
+export const UNIT_VALIDATION_RETRIES = 2;
+/** A translation shorter than this share of the source tokens is flagged as incomplete. */
+export const MIN_TRANSLATION_LENGTH_RATIO = 0.25;
+export const MIN_TOKENS_FOR_LENGTH_CHECK = 100;

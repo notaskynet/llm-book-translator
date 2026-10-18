@@ -1,0 +1,64 @@
+{
+  "title": "Traduire",
+  "drop": {
+    "hint": "Déposez un fichier .txt ou .srt ici, ou cliquez pour en choisir un",
+    "active": "Déposez le fichier pour le charger",
+    "unsupported": "Seuls les fichiers .txt et .srt sont pris en charge pour l'instant"
+  },
+  "source": "Langue source",
+  "target": "Langue cible",
+  "options": "Options",
+  "bilingual": "Sortie bilingue (original et traduction)",
+  "maxTokens": "Tokens max par segment",
+  "parallel": "Requêtes en parallèle",
+  "start": "Traduire",
+  "stop": "Arrêter",
+  "stopping": "Arrêt dès que les requêtes en cours sont terminées…",
+  "download": "Télécharger",
+  "another": "Traduire un autre fichier",
+  "needConnection": "Saisissez d'abord votre clé API et choisissez un modèle dans la section Connexion.",
+  "progress": "{{done}} sur {{total}} segments",
+  "failed": "{{count}} en échec",
+  "status": {
+    "running": "Traduction de {{name}}…",
+    "completed": "Terminé. Votre traduction est prête.",
+    "partial": "Terminé, mais {{count}} segments ne sont pas traduits. Reprenez pour les relancer.",
+    "pausedInterrupted": "Arrêté. Vous pouvez reprendre cette traduction à tout moment.",
+    "pausedRateLimit": "La limite de débit du fournisseur a été atteinte. Reprenez dans quelques minutes.",
+    "failed": "La traduction n'a pas pu être menée à terme.",
+    "reason": {
+      "prepare_failed": "Le fichier n'a pas pu être lu.",
+      "no_units": "Aucun texte à traduire n'a été trouvé dans le fichier.",
+      "reconstruct_failed": "Le fichier de sortie n'a pas pu être construit."
+    }
+  },
+  "resume": {
+    "title": "Traductions inachevées",
+    "action": "Reprendre",
+    "discard": "Supprimer",
+    "state": {
+      "running": "Interrompue",
+      "paused": "En pause",
+      "partial": "Partielle"
+    }
+  },
+  "log": {
+    "title": "Activité",
+    "checkpoint_resumed": "Reprise depuis la progression enregistrée",
+    "unit_failed": "Un segment n'a pas pu être traduit et sera relancé à la reprise",
+    "unit_error": "Une erreur inattendue s'est produite sur un segment",
+    "unit_validation_failed": "La réponse semblait incomplète, nouvel essai",
+    "unit_validation_exhausted": "La réponse est restée incomplète ; le segment est marqué en échec",
+    "empty_llm_response": "Le modèle n'a rien renvoyé (probablement un refus ou un filtre de contenu)",
+    "output_truncated": "Le modèle a épuisé ses tokens de sortie ; essayez une taille de segment plus petite",
+    "unclosed_translation_tag": "La réponse du modèle a été coupée",
+    "context_overflow_retry": "Le texte est trop long pour le modèle, découpage en cours",
+    "context_overflow_fatal": "Le texte est trop long pour le modèle, même après découpage",
+    "llm_key_rotated": "Limite de débit atteinte, passage à la clé API suivante",
+    "llm_rate_limit": "Limite de débit atteinte, attente avant nouvel essai",
+    "llm_request_failed": "Une requête a échoué",
+    "translation_interrupted": "Arrêté par vous",
+    "rate_limited": "En pause à cause de la limite de débit du fournisseur",
+    "using_raw_response_fallback": "Le modèle a ignoré le format de sortie ; utilisation de sa réponse brute"
+  }
+}

@@ -4,7 +4,7 @@ import HttpBackend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 export const LOCALES = ['en', 'fr', 'es', 'de', 'zh-CN', 'ja', 'ko'] as const;
-export const NAMESPACES = ['common', 'connection'] as const;
+export const NAMESPACES = ['common', 'connection', 'translate'] as const;
 
 void i18n
   .use(HttpBackend)

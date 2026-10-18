@@ -1,19 +1,31 @@
 // Port of src/core/chunking/token_chunker.py: token-based chunking that respects
 // paragraph and sentence boundaries. Same cl100k_base encoding as the Python side.
 
-import { Tiktoken } from 'js-tiktoken/lite';
-import cl100k_base from 'js-tiktoken/ranks/cl100k_base';
+import type { Tiktoken } from 'js-tiktoken/lite';
 import { SENTENCE_TERMINATORS } from '../config';
 
 let encoder: Tiktoken | undefined;
-function getEncoder(): Tiktoken {
-  return (encoder ??= new Tiktoken(cl100k_base));
+let loading: Promise<void> | undefined;
+
+/**
+ * Loads the cl100k_base vocabulary. It is over a megabyte, so it is fetched on
+ * demand rather than shipped in the initial bundle; call it before chunking.
+ */
+export function initTokenizer(): Promise<void> {
+  return (loading ??= (async () => {
+    const [{ Tiktoken }, { default: ranks }] = await Promise.all([
+      import('js-tiktoken/lite'),
+      import('js-tiktoken/ranks/cl100k_base'),
+    ]);
+    encoder = new Tiktoken(ranks);
+  })());
 }
 
 export function countTokens(text: string): number {
   if (!text) return 0;
+  if (!encoder) throw new Error('Tokenizer not loaded: await initTokenizer() first');
   // Special-token text is ordinary content in a book, never a control sequence.
-  return getEncoder().encode(text, [], []).length;
+  return encoder.encode(text, [], []).length;
 }
 
 export interface RawChunk {

@@ -8,14 +8,20 @@ Usage (from the repo root, with python-dotenv and tiktoken installed):
 
     python tests/standalone/dump_ts_fixtures.py
 """
+import asyncio
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
+import src.config as cfg  # noqa: E402
+from src.core.adapters.srt_adapter import SrtAdapter  # noqa: E402
+from src.core.adapters.txt_adapter import TxtAdapter  # noqa: E402
 from src.core.chunking.token_chunker import TokenChunker  # noqa: E402
+from src.core.srt_processor import SRTProcessor  # noqa: E402
 from src.core.translator import split_chunk_for_retry  # noqa: E402
 from src.prompts.examples.placeholder_examples import TRANSLATIONS  # noqa: E402
 from src.prompts.prompts import (  # noqa: E402
@@ -147,10 +153,148 @@ def split_cases() -> list:
     return cases
 
 
+SAMPLE_SRT = """1
+00:00:01,000 --> 00:00:03,000
+Hello there.
+
+2
+00:00:03,500 --> 00:00:05,000
+<i>How are you?</i>
+I am fine.
+
+3
+00:00:05,500 --> 00:00:06,000
+
+
+4
+00:00:07,000 --> 00:00:09,000
+- Good.
+- Great.
+
+5
+00:00:10,000 --> 00:00:12,000
+See you tomorrow.
+"""
+
+
+def _fake_translation(text: str) -> str:
+    """Deterministic stand-in for the LLM: keeps the [N] markers, tags the text."""
+    return "\n".join(
+        line if not line.strip() else (line[: line.index("]") + 1] + "TR " + line[line.index("]") + 1:]
+                                       if line.startswith("[") else "TR " + line)
+        for line in text.split("\n")
+    )
+
+
+async def _run_txt(text: str, max_tokens: int, translate_every: int):
+    with tempfile.TemporaryDirectory() as tmp:
+        src_path, out_path = Path(tmp) / "in.txt", Path(tmp) / "out.txt"
+        src_path.write_text(text, encoding="utf-8")
+        adapter = TxtAdapter(str(src_path), str(out_path), {"max_tokens_per_chunk": max_tokens})
+        await adapter.prepare_for_translation()
+        units = adapter.get_translation_units()
+        translated = {}
+        for i, unit in enumerate(units):
+            if i % translate_every == 0:
+                translated[unit.unit_id] = "TR " + unit.content
+                await adapter.save_unit_translation(unit.unit_id, translated[unit.unit_id])
+        return {
+            "units": [
+                {"unit_id": u.unit_id, "content": u.content, "context_before": u.context_before,
+                 "context_after": u.context_after, "metadata": u.metadata}
+                for u in units
+            ],
+            "translated": translated,
+            "validation": {
+                u.unit_id: adapter.validate_unit_translation(u.unit_id, "x") for u in units
+            },
+            "output": (await adapter.reconstruct_output()).decode("utf-8"),
+            "bilingual": (await adapter.reconstruct_output(bilingual=True)).decode("utf-8"),
+        }
+
+
+async def _run_srt(content: str, lines_per_block: int, skip_blocks: set):
+    cfg.ATTRIBUTION_ENABLED = False  # the app does not append the upstream signature
+    with tempfile.TemporaryDirectory() as tmp:
+        src_path, out_path = Path(tmp) / "in.srt", Path(tmp) / "out.srt"
+        src_path.write_text(content, encoding="utf-8")
+        adapter = SrtAdapter(str(src_path), str(out_path), {"lines_per_block": lines_per_block})
+        ok = await adapter.prepare_for_translation()
+        units = adapter.get_translation_units()
+        validations = {}
+        for i, unit in enumerate(units):
+            if i in skip_blocks:
+                continue
+            fake = _fake_translation(unit.content)
+            validations[unit.unit_id] = adapter.validate_unit_translation(unit.unit_id, fake)
+            await adapter.save_unit_translation(unit.unit_id, fake)
+        return {
+            "prepared": ok,
+            "subtitles": adapter.subtitles and [dict(s) for s in adapter.subtitles],
+            "units": [
+                {"unit_id": u.unit_id, "content": u.content, "context_before": u.context_before,
+                 "context_after": u.context_after, "metadata": u.metadata}
+                for u in units
+            ],
+            "validations": validations,
+            "missing_marker_feedback": adapter.validate_unit_translation(units[0].unit_id, "[0]only first"),
+            "output": (await adapter.reconstruct_output()).decode("utf-8"),
+            "bilingual": (await adapter.reconstruct_output(bilingual=True)).decode("utf-8"),
+        }
+
+
+def adapter_cases() -> dict:
+    sentence = "The traveller walked slowly along the old road. "
+    txt_text = "\n\n".join(f"Paragraph {i}. " + sentence * 8 for i in range(9)) + "\n\n" + sentence * 60
+    txt_cases = []
+    for name, text, max_tokens, every in (
+        ("paragraphs", txt_text, 120, 1),
+        ("partial", txt_text, 120, 2),
+        ("short", "One short paragraph.", 450, 1),
+    ):
+        txt_cases.append({"name": name, "text": text, "max_tokens": max_tokens,
+                          **asyncio.run(_run_txt(text, max_tokens, every))})
+
+    srt_cases = []
+    for name, content, lpb, skip in (
+        ("sample/3", SAMPLE_SRT, 3, set()),
+        ("sample/10", SAMPLE_SRT, 10, set()),
+        ("sample/2-skip-second", SAMPLE_SRT, 2, {1}),
+        ("crlf", SAMPLE_SRT.replace("\n", "\r\n"), 2, set()),
+        ("empty", "not an srt file", 3, set()),
+    ):
+        try:
+            srt_cases.append({"name": name, "content": content, "lines_per_block": lpb,
+                              "skip_blocks": sorted(skip), **asyncio.run(_run_srt(content, lpb, skip))})
+        except IndexError:
+            # `empty`: no subtitles, so there are no units to validate.
+            srt_cases.append({"name": name, "content": content, "lines_per_block": lpb,
+                              "skip_blocks": [], "prepared": False})
+
+    processor = SRTProcessor()
+    remap = []
+    for text, mapping in (
+        ("[0]Hello\n[1]World", {0: 458, 1: 459}),
+        ("[0]Hello [1]World", {0: 5, 1: 6}),
+        ("[0]Line one\nline two\n[1]Other", {0: 0, 1: 1}),
+        ("[0]\n[1]Only second", {0: 0, 1: 1}),
+        ("[2]Unknown index\n[0]Known", {0: 9}),
+    ):
+        got = processor.extract_block_translations_with_remapping(text, mapping)
+        remap.append({"text": text, "mapping": {str(k): v for k, v in mapping.items()},
+                      "result": {str(k): v for k, v in got.items()}})
+    return {"txt": txt_cases, "srt": srt_cases, "srt_remap": remap}
+
+
 def main() -> None:
     dump_language_tables()
     FIXTURES_OUT.parent.mkdir(parents=True, exist_ok=True)
-    payload = {"prompts": prompt_cases(), "chunker": chunker_cases(), "split": split_cases()}
+    payload = {
+        "prompts": prompt_cases(),
+        "chunker": chunker_cases(),
+        "split": split_cases(),
+        **adapter_cases(),
+    }
     FIXTURES_OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"Wrote {DATA_OUT.relative_to(ROOT)} and {FIXTURES_OUT.relative_to(ROOT)}")
 

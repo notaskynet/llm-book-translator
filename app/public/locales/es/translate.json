@@ -1,0 +1,64 @@
+{
+  "title": "Traducir",
+  "drop": {
+    "hint": "Suelta aquí un archivo .txt o .srt, o haz clic para elegir uno",
+    "active": "Suelta el archivo para cargarlo",
+    "unsupported": "Por ahora solo se admiten archivos .txt y .srt"
+  },
+  "source": "Idioma de origen",
+  "target": "Idioma de destino",
+  "options": "Opciones",
+  "bilingual": "Salida bilingüe (original y traducción)",
+  "maxTokens": "Tokens máx. por fragmento",
+  "parallel": "Solicitudes en paralelo",
+  "start": "Traducir",
+  "stop": "Detener",
+  "stopping": "Se detendrá cuando terminen las solicitudes en curso…",
+  "download": "Descargar",
+  "another": "Traducir otro archivo",
+  "needConnection": "Primero introduce tu clave API y elige un modelo en la sección Conexión.",
+  "progress": "{{done}} de {{total}} fragmentos",
+  "failed": "{{count}} fallidos",
+  "status": {
+    "running": "Traduciendo {{name}}…",
+    "completed": "Listo. Tu traducción está preparada.",
+    "partial": "Terminado, pero {{count}} fragmentos no están traducidos. Reanuda para reintentarlos.",
+    "pausedInterrupted": "Detenido. Puedes reanudar esta traducción en cualquier momento.",
+    "pausedRateLimit": "Se alcanzó el límite de solicitudes del proveedor. Reanuda en unos minutos.",
+    "failed": "No se pudo completar la traducción.",
+    "reason": {
+      "prepare_failed": "No se pudo leer el archivo.",
+      "no_units": "No se encontró texto traducible en el archivo.",
+      "reconstruct_failed": "No se pudo construir el archivo de salida."
+    }
+  },
+  "resume": {
+    "title": "Traducciones sin terminar",
+    "action": "Reanudar",
+    "discard": "Descartar",
+    "state": {
+      "running": "Interrumpida",
+      "paused": "En pausa",
+      "partial": "Parcial"
+    }
+  },
+  "log": {
+    "title": "Actividad",
+    "checkpoint_resumed": "Reanudando desde el progreso guardado",
+    "unit_failed": "No se pudo traducir un fragmento; se reintentará al reanudar",
+    "unit_error": "Ocurrió un error inesperado en un fragmento",
+    "unit_validation_failed": "La respuesta parecía incompleta, reintentando",
+    "unit_validation_exhausted": "La respuesta siguió incompleta; el fragmento se marca como fallido",
+    "empty_llm_response": "El modelo no devolvió nada (probablemente un rechazo o un filtro de contenido)",
+    "output_truncated": "El modelo se quedó sin tokens de salida; prueba con un tamaño de fragmento menor",
+    "unclosed_translation_tag": "La respuesta del modelo se cortó",
+    "context_overflow_retry": "El texto es demasiado largo para el modelo, dividiéndolo",
+    "context_overflow_fatal": "El texto es demasiado largo para el modelo incluso tras dividirlo",
+    "llm_key_rotated": "Límite de solicitudes alcanzado, cambiando a la siguiente clave API",
+    "llm_rate_limit": "Límite de solicitudes alcanzado, esperando antes de reintentar",
+    "llm_request_failed": "Una solicitud falló",
+    "translation_interrupted": "Detenido por ti",
+    "rate_limited": "En pausa por el límite de solicitudes del proveedor",
+    "using_raw_response_fallback": "El modelo ignoró el formato de salida; se usa su respuesta sin procesar"
+  }
+}

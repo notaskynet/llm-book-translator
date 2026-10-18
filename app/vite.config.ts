@@ -9,5 +9,5 @@ export default defineConfig({
   base: process.env.VITE_BASE ?? '/',
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  test: { environment: 'jsdom', setupFiles: ['./test/setup.ts'] },
+  test: { environment: 'jsdom', setupFiles: ['./test/setup.ts'], include: ['test/**/*.test.ts'] },
 });

@@ -1,0 +1,64 @@
+{
+  "title": "Translate",
+  "drop": {
+    "hint": "Drop a .txt or .srt file here, or click to choose one",
+    "active": "Drop the file to load it",
+    "unsupported": "Only .txt and .srt files are supported for now"
+  },
+  "source": "Source language",
+  "target": "Target language",
+  "options": "Options",
+  "bilingual": "Bilingual output (original and translation)",
+  "maxTokens": "Max tokens per chunk",
+  "parallel": "Parallel requests",
+  "start": "Translate",
+  "stop": "Stop",
+  "stopping": "Stopping once the current requests finish…",
+  "download": "Download",
+  "another": "Translate another file",
+  "needConnection": "Enter your API key and choose a model in the Connection section first.",
+  "progress": "{{done}} of {{total}} units",
+  "failed": "{{count}} failed",
+  "status": {
+    "running": "Translating {{name}}…",
+    "completed": "Done. Your translation is ready.",
+    "partial": "Finished, but {{count}} units are untranslated. Resume to retry them.",
+    "pausedInterrupted": "Stopped. You can resume this translation at any time.",
+    "pausedRateLimit": "The provider's rate limit was reached. Resume in a few minutes.",
+    "failed": "The translation could not be completed.",
+    "reason": {
+      "prepare_failed": "The file could not be read.",
+      "no_units": "No translatable text was found in the file.",
+      "reconstruct_failed": "The output file could not be built."
+    }
+  },
+  "resume": {
+    "title": "Unfinished translations",
+    "action": "Resume",
+    "discard": "Discard",
+    "state": {
+      "running": "Interrupted",
+      "paused": "Paused",
+      "partial": "Partial"
+    }
+  },
+  "log": {
+    "title": "Activity",
+    "checkpoint_resumed": "Resuming from saved progress",
+    "unit_failed": "A unit could not be translated and will be retried on resume",
+    "unit_error": "An unexpected error occurred on a unit",
+    "unit_validation_failed": "The answer looked incomplete, retrying",
+    "unit_validation_exhausted": "The answer stayed incomplete; the unit is marked as failed",
+    "empty_llm_response": "The model returned nothing (likely a refusal or a content filter)",
+    "output_truncated": "The model ran out of output tokens; try a smaller chunk size",
+    "unclosed_translation_tag": "The model's answer was cut off",
+    "context_overflow_retry": "The text is too long for the model, splitting it",
+    "context_overflow_fatal": "The text is too long for the model even after splitting",
+    "llm_key_rotated": "Rate limit hit, switching to the next API key",
+    "llm_rate_limit": "Rate limit hit, waiting before retrying",
+    "llm_request_failed": "A request failed",
+    "translation_interrupted": "Stopped by you",
+    "rate_limited": "Paused because of the provider's rate limit",
+    "using_raw_response_fallback": "The model ignored the output format; using its raw answer"
+  }
+}

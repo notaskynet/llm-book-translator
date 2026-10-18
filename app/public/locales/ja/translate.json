@@ -1,0 +1,64 @@
+{
+  "title": "翻訳",
+  "drop": {
+    "hint": ".txt または .srt ファイルをここにドロップするか、クリックして選択",
+    "active": "ファイルをドロップして読み込み",
+    "unsupported": "現在は .txt と .srt ファイルのみ対応しています"
+  },
+  "source": "原文の言語",
+  "target": "翻訳先の言語",
+  "options": "オプション",
+  "bilingual": "対訳出力（原文と訳文）",
+  "maxTokens": "チャンクあたりの最大トークン数",
+  "parallel": "並列リクエスト数",
+  "start": "翻訳",
+  "stop": "停止",
+  "stopping": "実行中のリクエストが終わり次第、停止します…",
+  "download": "ダウンロード",
+  "another": "別のファイルを翻訳",
+  "needConnection": "先に「接続」セクションで API キーを入力し、モデルを選択してください。",
+  "progress": "{{total}} 件中 {{done}} 件",
+  "failed": "{{count}} 件失敗",
+  "status": {
+    "running": "{{name}} を翻訳中…",
+    "completed": "完了しました。翻訳の準備ができました。",
+    "partial": "完了しましたが、{{count}} 件が未翻訳です。再開して再試行できます。",
+    "pausedInterrupted": "停止しました。この翻訳はいつでも再開できます。",
+    "pausedRateLimit": "プロバイダーのレート制限に達しました。数分後に再開してください。",
+    "failed": "翻訳を完了できませんでした。",
+    "reason": {
+      "prepare_failed": "ファイルを読み込めませんでした。",
+      "no_units": "ファイルに翻訳可能なテキストが見つかりませんでした。",
+      "reconstruct_failed": "出力ファイルを作成できませんでした。"
+    }
+  },
+  "resume": {
+    "title": "未完了の翻訳",
+    "action": "再開",
+    "discard": "破棄",
+    "state": {
+      "running": "中断",
+      "paused": "一時停止",
+      "partial": "一部完了"
+    }
+  },
+  "log": {
+    "title": "アクティビティ",
+    "checkpoint_resumed": "保存済みの進捗から再開します",
+    "unit_failed": "翻訳できなかった項目があります。再開時に再試行されます",
+    "unit_error": "ある項目で予期しないエラーが発生しました",
+    "unit_validation_failed": "回答が不完全に見えるため再試行します",
+    "unit_validation_exhausted": "回答が不完全なままだったため、この項目は失敗として扱います",
+    "empty_llm_response": "モデルが何も返しませんでした（拒否またはコンテンツフィルターの可能性があります）",
+    "output_truncated": "モデルの出力トークンが尽きました。チャンクサイズを小さくしてください",
+    "unclosed_translation_tag": "モデルの回答が途中で切れました",
+    "context_overflow_retry": "テキストがモデルには長すぎるため、分割します",
+    "context_overflow_fatal": "分割してもテキストがモデルには長すぎます",
+    "llm_key_rotated": "レート制限に達したため、次の API キーに切り替えます",
+    "llm_rate_limit": "レート制限に達したため、待機してから再試行します",
+    "llm_request_failed": "リクエストに失敗しました",
+    "translation_interrupted": "ユーザーが停止しました",
+    "rate_limited": "プロバイダーのレート制限により一時停止しました",
+    "using_raw_response_fallback": "モデルが出力形式を無視したため、生の回答を使用します"
+  }
+}
