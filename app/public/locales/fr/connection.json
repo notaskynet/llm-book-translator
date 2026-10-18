@@ -1,0 +1,16 @@
+{
+  "title": "Connexion",
+  "baseUrl": "URL de base",
+  "preset": "Préréglage",
+  "custom": "Personnalisé",
+  "apiKey": "Clé API",
+  "remember": "Mémoriser sur cet appareil",
+  "rememberWarning": "Stockée en clair dans le localStorage de ce navigateur. À activer uniquement sur un appareil de confiance.",
+  "model": "Modèle",
+  "loadModels": "Charger les modèles",
+  "test": "Tester la connexion",
+  "connected": "Connecté : {{count}} modèles disponibles",
+  "unauthorized": "Clé API invalide",
+  "network": "Serveur injoignable. Le fournisseur bloque peut-être les requêtes du navigateur (CORS).",
+  "failed": "Échec de la requête"
+}

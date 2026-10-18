@@ -1,0 +1,16 @@
+{
+  "title": "连接",
+  "baseUrl": "基础 URL",
+  "preset": "预设",
+  "custom": "自定义",
+  "apiKey": "API 密钥",
+  "remember": "在此设备上记住",
+  "rememberWarning": "以明文形式保存在此浏览器的 localStorage 中。请仅在可信设备上启用。",
+  "model": "模型",
+  "loadModels": "加载模型",
+  "test": "测试连接",
+  "connected": "已连接：可用模型 {{count}} 个",
+  "unauthorized": "API 密钥无效",
+  "network": "无法访问服务器。服务商可能阻止了浏览器请求（CORS）。",
+  "failed": "请求失败"
+}

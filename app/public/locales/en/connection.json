@@ -1,0 +1,16 @@
+{
+  "title": "Connection",
+  "baseUrl": "Base URL",
+  "preset": "Preset",
+  "custom": "Custom",
+  "apiKey": "API key",
+  "remember": "Remember on this device",
+  "rememberWarning": "Stored in this browser's localStorage in plain text. Only enable on a device you trust.",
+  "model": "Model",
+  "loadModels": "Load models",
+  "test": "Test connection",
+  "connected": "Connected: {{count}} models available",
+  "unauthorized": "Invalid API key",
+  "network": "Cannot reach the server. The provider may block browser requests (CORS).",
+  "failed": "Request failed"
+}
