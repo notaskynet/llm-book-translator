@@ -26,6 +26,8 @@ export interface UnitTranslationContext {
   targetLanguage: string;
   promptOptions: PromptOptions;
   previousTranslationContext: string;
+  /** Glossary block for the text about to be sent (empty when no glossary is active). */
+  buildGlossaryBlock?: (content: string) => string;
   log?: LogCallback;
   signal?: AbortSignal;
 }

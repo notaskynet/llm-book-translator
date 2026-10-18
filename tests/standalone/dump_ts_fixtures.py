@@ -40,7 +40,23 @@ from src.core.epub.xhtml_translator import (  # noqa: E402
     _escape_stray_angle_brackets,
     validate_placeholders,
 )
+from src.core.glossary import (  # noqa: E402
+    GlossaryConfig,
+    build_cast_block,
+    build_glossary_block,
+    filter_glossary,
+    parse_ner_response,
+)
+from src.core.glossary.inflection import target_language_is_inflected  # noqa: E402
+from src.core.glossary.models import normalize_gender  # noqa: E402
 from src.core.srt_processor import SRTProcessor  # noqa: E402
+from src.core.style.assembler import assemble_instructions  # noqa: E402
+from src.core.style.extractor import parse_style_response  # noqa: E402
+from src.core.style.lint import lint_instruction  # noqa: E402
+from src.core.translator import _build_chunk_glossary_block  # noqa: E402
+from src.prompts.prompts import generate_ner_extraction_prompt, generate_style_extraction_prompt  # noqa: E402
+from src.utils.custom_instructions import read_preset, write_preset  # noqa: E402
+from src.utils.document_sampler import take_distributed_samples  # noqa: E402
 from src.core.translator import split_chunk_for_retry  # noqa: E402
 from src.prompts.examples.placeholder_examples import TRANSLATIONS  # noqa: E402
 from src.prompts.prompts import (  # noqa: E402
@@ -416,6 +432,151 @@ def epub_cases() -> dict:
     }
 
 
+def phase5_cases() -> dict:
+    out: dict = {}
+
+    out["ner_prompts"] = [
+        {"args": a, "system": (p := generate_ner_extraction_prompt(*a)).system, "user": p.user}
+        for a in (("Some text here.", "Chinese", "English"), ("Texte.", "French", "Russian"))
+    ]
+    out["style_prompts"] = [
+        {"args": a, "system": (p := generate_style_extraction_prompt(*a)).system, "user": p.user}
+        for a in (
+            ("Sample passage.", "source", "English", "French"),
+            ("Sample passage.", "model", "English", "French"),
+        )
+    ]
+
+    terms = {
+        "Li Fan": "李凡", "Li": "李", "Fantasy": "幻想", "Москва|Москве|Москвы": "Moscou",
+        "青玄宗": "Qingxuan Sect", "dragon": "dragon_t", "Rain": "pluie",
+    }
+    chunks = [
+        "Li Fan met Li at the Fantasy fair. Li Fan left.",
+        "В Москве шёл дождь. Москва спала. 青玄宗的弟子来了。",
+        "No match here at all.",
+        "dragon Dragon DRAGON rain Rain",
+    ]
+    filter_cases = []
+    for chunk in chunks:
+        for cs in (True, False):
+            for max_entries in (50, 2):
+                cfg = GlossaryConfig(max_entries=max_entries, case_sensitive=cs)
+                got, capped = filter_glossary(chunk, terms, cfg)
+                filter_cases.append({
+                    "chunk": chunk, "terms": terms, "case_sensitive": cs, "max_entries": max_entries,
+                    "result": list(got.items()), "capped": capped,
+                })
+    out["glossary_filter"] = filter_cases
+
+    metadata = {"Li Fan": {"category": "character", "gender": "male"},
+                "Москва|Москве|Москвы": {"category": "location"},
+                "青玄宗": {"category": "organization"},
+                "Li": {"gender": "female"}}
+    block_cases = []
+    for target_language in ("French", "Russian", "German", ""):
+        filtered, _ = filter_glossary(chunks[0] + " " + chunks[1], terms, GlossaryConfig())
+        block_cases.append({
+            "target_language": target_language, "terms": list(filtered.items()), "metadata": metadata,
+            "block": build_glossary_block(filtered, target_language=target_language, term_metadata=metadata),
+            "inflected": target_language_is_inflected(target_language),
+        })
+    out["glossary_blocks"] = block_cases
+
+    cast_cases = []
+    for max_entries in (80, 1):
+        block, capped = build_cast_block(terms, term_metadata=metadata, max_entries=max_entries)
+        cast_cases.append({"terms": list(terms.items()), "metadata": metadata, "max_entries": max_entries,
+                           "block": block, "capped": capped})
+    cast_cases.append({"terms": list(terms.items()), "metadata": {}, "max_entries": 80,
+                       "block": build_cast_block(terms, term_metadata={}, max_entries=80)[0], "capped": False})
+    out["glossary_cast"] = cast_cases
+
+    chunk_block_cases = []
+    for chunk in chunks:
+        for config in (None, GlossaryConfig(max_entries=2)):
+            options = {"glossary_terms": terms, "glossary_term_metadata": metadata}
+            if config:
+                options["glossary_config"] = config
+            chunk_block_cases.append({
+                "chunk": chunk, "max_entries": config.max_entries if config else 50, "target_language": "Russian",
+                "block": _build_chunk_glossary_block(chunk, options, target_language="Russian"),
+            })
+    chunk_block_cases.append({"chunk": "x", "max_entries": 50, "target_language": "",
+                              "block": _build_chunk_glossary_block("x", {}, target_language=""), "no_glossary": True})
+    out["glossary_chunk_blocks"] = chunk_block_cases
+
+    out["gender"] = [{"input": v, "result": normalize_gender(v)} for v in
+                     ("male", "M", "woman", "Feminine", "unknown", "", None, "other", "female.")]
+
+    ner_raw = [
+        '<NER_JSON>[{"source":"李凡","target":"Li Fan","category":"character","gender":"male"},'
+        '{"source":"李凡","target":"dup","category":"character"},{"target":"nosource"}]</NER_JSON>',
+        '```json\n[{"source":"A","target":"B","category":"weird","gender":"F"},]\n```',
+        'Here you go: {"entities": [{"source":"Excalibur","target":"Excalibur","category":"item"}]}',
+        '<think>hmm</think>[{"source":"X","type":"Location","translation":"Y","sex":"woman"}]',
+        'no json at all', '', '[]',
+    ]
+    out["ner_parse"] = [{"raw": r, "candidates": c, "warnings": w} for r in ner_raw for c, w in [parse_ner_response(r)]]
+
+    style_raw = [
+        '<STYLE_JSON>{"summary":"Terse.","suggested_name":"Dry Noir!","context":"A town.","rules":['
+        '{"dimension":"sentence_rhythm","instruction":"Favor short sentences over long ones in action passages.","evidence":"He ran."},'
+        '{"dimension":"weird","instruction":"Use words like \\"dusk\\" and gloom often today.","evidence":"x"},'
+        '{"dimension":"lexicon","instruction":"Short."},'
+        '{"dimension":"register","instruction":"Favor short sentences over long ones in action passages."},'
+        '{"dimension":"imagery","instruction":"Keep the Raymond Chandler tone."},'
+        '{"dimension":"punctuation","instruction":"Prefer plain, steady, quiet, calm punctuation overall."}]}</STYLE_JSON>',
+        '```json\n[{"dimension":"dialogue","instruction":"Keep spoken lines clipped and free of speech tags throughout."}]\n```',
+        'noise {"summary":"S","rules":"notalist"} noise', 'nothing', '',
+    ]
+    out["style_parse"] = [{"raw": r, "style": st, "warnings": w} for r in style_raw for st, w in [parse_style_response(r)]]
+
+    lint_inputs = [
+        "", "Short.", 'Use "dusk" often in descriptions across passages.', "Use imagery such as storms in the text overall.",
+        "Prefer plain, steady, quiet words for descriptions overall.", "Keep the Raymond Chandler tone in dialogue.",
+        "Favor short sentences over long ones in action passages.", "Mirror the French register when moving into English prose.",
+        "Avoid NASA-style abbreviations throughout the translated text.", "Favor concrete nouns: rain, iron, dust, smoke.",
+    ]
+    out["style_lint"] = [{"text": t, "flags": lint_instruction(t)} for t in lint_inputs]
+
+    rules = [{"dimension": "register", "instruction": "Keep a dry, detached tone"},
+             {"dimension": "rhythm", "instruction": "Vary sentence length naturally."}, {"dimension": "x", "instruction": "  "}]
+    out["style_assemble"] = [
+        {"mode": m, "context": c, "rules": rules, "result": assemble_instructions(m, rules, c)}
+        for m in ("source", "model") for c in ("", "A medieval frontier town.")
+    ] + [{"mode": "source", "context": "x", "rules": [], "result": assemble_instructions("source", [], "x")}]
+
+    text = " ".join(f"word{i}" for i in range(4000))
+    out["samples"] = [
+        {"total": t, "n": n, "min": m, "result": list(take_distributed_samples(text, t, n, m))}
+        for t, n, m in ((6000, 6, 500), (6000, 1, 500), (500, 6, 500), (100000, 6, 500), (3000, 20, 500), (10000, 6, 1200))
+    ]
+
+    import tempfile
+    presets = {
+        "full.yaml": {"description": "Dry noir", "mode": "source", "context": "A town.", "source_files": ["a.epub"],
+                      "generated_at": "2025-01-01T00:00:00+00:00",
+                      "rules": [{"dimension": "register", "instruction": "Keep it dry."}],
+                      "translation": "Match the style.\n\n- Keep it dry.", "refinement": "Polish it."},
+        "plain.yaml": {"translation": "Only translation here."},
+        "empty.yaml": {},
+    }
+    preset_cases = []
+    with tempfile.TemporaryDirectory() as tmp:
+        from pathlib import Path
+        d = Path(tmp)
+        for name, payload in presets.items():
+            write_preset(name, payload, d)
+            preset_cases.append({"filename": name, "yaml": (d / name).read_text(encoding="utf-8"),
+                                 "preset": read_preset(name, d)})
+        (d / "legacy.txt").write_text("\ufeffBe formal.\n", encoding="utf-8")
+        preset_cases.append({"filename": "legacy.txt", "yaml": (d / "legacy.txt").read_text(encoding="utf-8"),
+                             "preset": read_preset("legacy.txt", d)})
+    out["presets"] = preset_cases
+    return out
+
+
 def main() -> None:
     dump_language_tables()
     FIXTURES_OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -428,6 +589,7 @@ def main() -> None:
         "split": split_cases(),
         **adapter_cases(),
         **epub,
+        **phase5_cases(),
     }
     FIXTURES_OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"Wrote {DATA_OUT.relative_to(ROOT)} and {FIXTURES_OUT.relative_to(ROOT)}")

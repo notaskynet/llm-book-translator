@@ -2,7 +2,8 @@
 // progress, keeps the screen awake, and exposes stop/resume.
 
 import { create } from 'zustand';
-import { checkpointStore } from '../checkpoint';
+import { checkpointStore, library } from '../checkpoint';
+import { termsMap, termsMetadata, type TermMetadata } from '../glossary/models';
 import type { JobRecord } from '../checkpoint/types';
 import { createAdapter, isSupportedFile, mimeTypeFor, outputFileName } from '../formats';
 import { OpenAICompatibleProvider } from '../llm/provider';
@@ -19,6 +20,24 @@ export interface LogLine {
 export interface JobOutput {
   blob: Blob;
   fileName: string;
+}
+
+/**
+ * What the job was started with. Kept in the job so a resume uses the same instructions and
+ * glossary even if the preset was edited or deleted in the meantime.
+ */
+export interface JobSnapshot {
+  customInstructions: string;
+  glossary: { terms: Array<[string, string]>; metadata: TermMetadata } | null;
+}
+
+async function takeSnapshot(options: TranslationOptions): Promise<JobSnapshot> {
+  const preset = options.presetId ? await library.getPreset(options.presetId) : undefined;
+  const glossary = options.glossaryId != null ? await library.getGlossary(options.glossaryId) : undefined;
+  return {
+    customInstructions: preset?.translation ?? '',
+    glossary: glossary?.terms.length ? { terms: [...termsMap(glossary.terms)], metadata: termsMetadata(glossary.terms) } : null,
+  };
 }
 
 export type JobPhase = 'idle' | 'running' | 'finished';
@@ -71,9 +90,10 @@ async function run(job: {
   fileName: string;
   input: ArrayBuffer;
   options: TranslationOptions;
+  snapshot: JobSnapshot;
 }) {
   const { apiKey, baseUrl, model } = useSettings.getState();
-  const { id, fileName, input, options } = job;
+  const { id, fileName, input, options, snapshot } = job;
 
   interrupt = false;
   patch({ phase: 'running', fileName, stopRequested: false, stats: undefined, outcome: undefined, output: undefined, logs: [] });
@@ -99,7 +119,11 @@ async function run(job: {
       sourceLanguage: options.sourceLanguage,
       targetLanguage: options.targetLanguage,
       // Everything needed to resume, but never the API key.
-      jobConfig: { ...options, baseUrl, model },
+      jobConfig: { ...options, baseUrl, model, snapshot },
+      promptOptions: { custom_instructions: snapshot.customInstructions, text_cleanup: options.textCleanup },
+      glossary: snapshot.glossary
+        ? { terms: new Map(snapshot.glossary.terms), metadata: snapshot.glossary.metadata }
+        : undefined,
       bilingual: options.bilingual,
       parallelWorkers: options.parallelWorkers,
       callbacks: { onLog, onStats: (stats) => patch({ stats }), shouldInterrupt: () => interrupt },
@@ -124,16 +148,20 @@ async function run(job: {
 export async function startJob(file: File): Promise<void> {
   if (!isSupportedFile(file.name)) throw new Error('unsupported');
   const input = await file.arrayBuffer();
-  await run({ id: `job_${Date.now()}`, fileName: file.name, input, options: currentOptions() });
+  const options = currentOptions();
+  await run({ id: `job_${Date.now()}`, fileName: file.name, input, options, snapshot: await takeSnapshot(options) });
 }
 
 export async function resumeJob(jobId: string): Promise<void> {
   const record = await checkpointStore.getJob(jobId);
   if (!record) return;
   // Resume with the settings the job started with; connection details come from the settings store.
-  const saved = record.config as Partial<TranslationOptions>;
+  const { snapshot, ...saved } = record.config as Partial<TranslationOptions> & { snapshot?: JobSnapshot };
   const options = { ...currentOptions(), ...saved };
-  await run({ id: record.id, fileName: record.fileName, input: record.input, options });
+  await run({
+    id: record.id, fileName: record.fileName, input: record.input, options,
+    snapshot: snapshot ?? { customInstructions: '', glossary: null },
+  });
 }
 
 export async function discardJob(jobId: string): Promise<void> {

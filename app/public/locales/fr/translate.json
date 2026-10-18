@@ -65,5 +65,10 @@
     "replace_body_error": "Un chapitre n'a pas pu être reconstruit et a été laissé tel qu'à la source",
     "epub_file_not_found": "Un chapitre listé dans le livre est introuvable et a été ignoré",
     "epub_xml_error": "Un chapitre n'a pas pu être lu et n'a pas été traduit"
-  }
+  },
+  "style_select": "Style",
+  "glossary_select": "Glossaire",
+  "none": "Aucun",
+  "text_cleanup": "Corriger les erreurs d'OCR et les sauts de ligne cassés pendant la traduction",
+  "tabs": "Sections"
 }

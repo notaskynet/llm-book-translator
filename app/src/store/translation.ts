@@ -8,6 +8,12 @@ export interface TranslationOptions {
   bilingual: boolean;
   maxTokensPerChunk: number;
   parallelWorkers: number;
+  /** Style preset (id) applied to the translation, or null. */
+  presetId: string | null;
+  /** Glossary (id) whose terms are injected into the prompts, or null. */
+  glossaryId: number | null;
+  /** Ask the model to repair OCR errors and broken line breaks while translating. */
+  textCleanup: boolean;
 }
 
 interface OptionsState extends TranslationOptions {
@@ -16,8 +22,9 @@ interface OptionsState extends TranslationOptions {
 
 /** The option values only, without the store's actions (which cannot be persisted or cloned). */
 export function currentOptions(): TranslationOptions {
-  const { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers } = useTranslationOptions.getState();
-  return { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers };
+  const { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers, presetId, glossaryId, textCleanup } =
+    useTranslationOptions.getState();
+  return { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers, presetId, glossaryId, textCleanup };
 }
 
 export const useTranslationOptions = create<OptionsState>()(
@@ -28,6 +35,9 @@ export const useTranslationOptions = create<OptionsState>()(
       bilingual: false,
       maxTokensPerChunk: DEFAULT_MAX_TOKENS_PER_CHUNK,
       parallelWorkers: 3,
+      presetId: null,
+      glossaryId: null,
+      textCleanup: false,
       set: (patch) => set(patch),
     }),
     {

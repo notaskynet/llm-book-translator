@@ -65,5 +65,10 @@
     "replace_body_error": "Ein Kapitel konnte nicht neu aufgebaut werden und blieb wie im Original",
     "epub_file_not_found": "Ein im Buch aufgeführtes Kapitel wurde nicht gefunden und übersprungen",
     "epub_xml_error": "Ein Kapitel konnte nicht gelesen werden und blieb unübersetzt"
-  }
+  },
+  "style_select": "Stil",
+  "glossary_select": "Glossar",
+  "none": "Keiner",
+  "text_cleanup": "OCR-Fehler und kaputte Zeilenumbrüche beim Übersetzen korrigieren",
+  "tabs": "Bereiche"
 }

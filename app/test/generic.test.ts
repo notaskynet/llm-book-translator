@@ -27,6 +27,44 @@ function txtJob(over: Partial<Parameters<typeof translateJob>[0]> & { provider: 
 /** A full-length fake translation: the source with an `FR ` prefix, tagged. */
 const echoFr = (user: string) => tagged(`FR ${sourceOf(user)}`);
 
+describe('glossary and style instructions', () => {
+  it('injects only the glossary entries that match each chunk', async () => {
+    const provider = fakeProvider(echoFr);
+    const glossary = { terms: new Map([['Paragraph 3', 'Abschnitt 3']]), metadata: { 'Paragraph 3': { category: 'other' } } };
+    const { run } = txtJob({ provider });
+    expect((await run({ glossary })).status).toBe('completed');
+
+    const withTerm = provider.calls.filter((c) => sourceOf(c.user).includes('Paragraph 3.'));
+    const without = provider.calls.filter((c) => !sourceOf(c.user).includes('Paragraph 3.'));
+    expect(withTerm.length).toBeGreaterThan(0);
+    expect(without.length).toBeGreaterThan(0);
+    for (const c of withTerm) expect(c.user).toContain('  - Paragraph 3 -> Abschnitt 3  [other]');
+    for (const c of without) expect(c.user).not.toContain('GLOSSARY');
+  });
+
+  it('puts the cast block in every chunk, even those without a match', async () => {
+    const provider = fakeProvider(echoFr);
+    const glossary = { terms: new Map([['Zed', 'Zed']]), metadata: { Zed: { gender: 'female' } } };
+    await txtJob({ provider }).run({ glossary });
+    expect(provider.calls.every((c) => c.user.includes('# CAST - CHARACTER GENDERS') && c.user.includes('Zed — female'))).toBe(true);
+    expect(provider.calls.every((c) => !c.user.includes('# GLOSSARY'))).toBe(true);
+  });
+
+  it('applies the style instructions to every request', async () => {
+    const provider = fakeProvider(echoFr);
+    await txtJob({ provider }).run({ promptOptions: { custom_instructions: 'Use a formal register.' } });
+    expect(provider.calls.every((c) => c.system?.includes('# STYLE INSTRUCTIONS') && c.system.includes('Use a formal register.'))).toBe(true);
+  });
+
+  it('warns once when the glossary cap is hit', async () => {
+    const terms = new Map(Array.from({ length: 5 }, (_, i) => [`Paragraph ${i}`, `P${i}`] as [string, string]));
+    const logs: string[] = [];
+    const provider = fakeProvider(echoFr);
+    await txtJob({ provider }).run({ glossary: { terms, config: { maxEntries: 1 } }, callbacks: { onLog: (e) => logs.push(e) } });
+    expect(logs.filter((e) => e === 'glossary_capped')).toHaveLength(1);
+  });
+});
+
 describe('translateJob (TXT)', () => {
   it('translates every unit sequentially, chains context and completes', async () => {
     const provider = fakeProvider(echoFr);

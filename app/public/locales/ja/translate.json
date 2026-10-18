@@ -65,5 +65,10 @@
     "replace_body_error": "再構築できなかった章があり、原文のままにしました",
     "epub_file_not_found": "書籍に記載された章が見つからず、スキップしました",
     "epub_xml_error": "読み込めなかった章があり、未翻訳のままです"
-  }
+  },
+  "style_select": "スタイル",
+  "glossary_select": "用語集",
+  "none": "なし",
+  "text_cleanup": "翻訳時に OCR の誤りや壊れた改行を修正する",
+  "tabs": "セクション"
 }

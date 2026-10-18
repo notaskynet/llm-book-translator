@@ -25,7 +25,7 @@ export async function translateEpubChunk(
   ctx: UnitTranslationContext,
   maxAttempts = MAX_TRANSLATION_ATTEMPTS,
 ): Promise<ChunkTranslation> {
-  const { provider, sourceLanguage, targetLanguage, promptOptions, log, signal } = ctx;
+  const { provider, sourceLanguage, targetLanguage, promptOptions, buildGlossaryBlock, log, signal } = ctx;
 
   // Nothing for the LLM to do (pure markup, a separator, a bare number): an empty answer
   // would wipe the body, so pass it through verbatim.
@@ -37,7 +37,7 @@ export async function translateEpubChunk(
   const request = (mainContent: string, hasPlaceholders: boolean) =>
     translateChunk({
       mainContent, contextBefore: '', contextAfter: '', previousTranslationContext: '',
-      sourceLanguage, targetLanguage, provider, hasPlaceholders, promptOptions, log, signal,
+      sourceLanguage, targetLanguage, provider, hasPlaceholders, promptOptions, buildGlossaryBlock, log, signal,
     });
 
   // Phase 1

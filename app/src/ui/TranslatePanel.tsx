@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useDropzone } from 'react-dropzone';
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
+import { library } from '@/checkpoint';
 import { isSupportedFile, SUPPORTED_EXTENSIONS } from '@/formats';
 import { useSettings } from '@/store/settings';
 import { useTranslationOptions } from '@/store/translation';
@@ -23,6 +25,9 @@ const VISIBLE_EVENTS = new Set([
 
 export function TranslatePanel() {
   const { t, i18n } = useTranslation('translate');
+  const { t: tg } = useTranslation('glossary');
+  const presets = useLiveQuery(() => library.listPresets(), []) ?? [];
+  const glossaries = useLiveQuery(() => library.listGlossaries(), []) ?? [];
   const options = useTranslationOptions();
   const { apiKey, model } = useSettings();
   const job = useJob();
@@ -44,6 +49,17 @@ export function TranslatePanel() {
       void startJob(file);
     },
   });
+
+  // A glossary made for another language pair is probably the wrong one; say so, but allow it.
+  const activeGlossary = glossaries.find((g) => g.id === options.glossaryId);
+  const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+  const mismatch: string[] = [];
+  if (activeGlossary?.sourceLanguage && !same(activeGlossary.sourceLanguage, options.sourceLanguage)) {
+    mismatch.push(tg('lang_mismatch_source', { glossary: activeGlossary.sourceLanguage, request: options.sourceLanguage }));
+  }
+  if (activeGlossary?.targetLanguage && !same(activeGlossary.targetLanguage, options.targetLanguage)) {
+    mismatch.push(tg('lang_mismatch_target', { glossary: activeGlossary.targetLanguage, request: options.targetLanguage }));
+  }
 
   const { stats, outcome } = job;
   const percent = stats && stats.totalChunks ? Math.round((stats.completedChunks / stats.totalChunks) * 100) : 0;
@@ -71,9 +87,43 @@ export function TranslatePanel() {
         <datalist id="language-list">{LANGUAGES.map((l) => <option key={l} value={l} />)}</datalist>
       </div>
 
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block text-sm">
+          {t('style_select')}
+          <select
+            aria-label={t('style_select')}
+            className="mt-1 block w-full rounded border px-2 py-1"
+            disabled={running}
+            value={options.presetId ?? ''}
+            onChange={(e) => options.set({ presetId: e.target.value || null })}
+          >
+            <option value="">{t('none')}</option>
+            {presets.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+        </label>
+        <label className="block text-sm">
+          {t('glossary_select')}
+          <select
+            aria-label={t('glossary_select')}
+            className="mt-1 block w-full rounded border px-2 py-1"
+            disabled={running}
+            value={options.glossaryId ?? ''}
+            onChange={(e) => options.set({ glossaryId: e.target.value ? Number(e.target.value) : null })}
+          >
+            <option value="">{t('none')}</option>
+            {glossaries.map((g) => <option key={g.id} value={g.id}>{g.name} ({tg('term_count', { count: g.terms.length })})</option>)}
+          </select>
+        </label>
+      </div>
+      {mismatch.length > 0 && <p role="note" className="text-sm text-amber-700">{tg('lang_mismatch', { parts: mismatch.join(tg('list_separator')) })}</p>}
+
       <details className="text-sm">
         <summary className="cursor-pointer">{t('options')}</summary>
         <div className="mt-2 space-y-2">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" disabled={running} checked={options.textCleanup} onChange={(e) => options.set({ textCleanup: e.target.checked })} />
+            {t('text_cleanup')}
+          </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" disabled={running} checked={options.bilingual} onChange={(e) => options.set({ bilingual: e.target.checked })} />
             {t('bilingual')}

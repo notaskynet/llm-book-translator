@@ -18,6 +18,8 @@ interface RunOptions {
   store?: MemoryStore;
   bilingual?: boolean;
   parallelWorkers?: number;
+  glossary?: Parameters<typeof translateJob>[0]['glossary'];
+  promptOptions?: Parameters<typeof translateJob>[0]['promptOptions'];
   maxTokensPerChunk?: number;
   shouldInterrupt?: () => boolean;
   input?: Uint8Array;
@@ -36,7 +38,7 @@ async function run(options: RunOptions = {}) {
     }),
     store, translationId: 'epub1', fileName: 'book.epub', input: input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength) as ArrayBuffer,
     sourceLanguage: 'English', targetLanguage: 'French', provider,
-    bilingual: options.bilingual, parallelWorkers: options.parallelWorkers,
+    bilingual: options.bilingual, parallelWorkers: options.parallelWorkers, glossary: options.glossary, promptOptions: options.promptOptions,
     callbacks: { onLog: (e) => logs.push(e), shouldInterrupt: options.shouldInterrupt },
   });
   return { outcome, provider, store, logs };
@@ -157,6 +159,24 @@ describe('EPUB translation end to end', () => {
     const { outcome, logs } = await run({ missingSpineFile: true });
     expect(outcome.status).toBe('completed');
     expect(logs).toContain('epub_file_not_found');
+  });
+
+  it('sends the glossary and style instructions with EPUB chunks, including the fallback request', async () => {
+    const glossary = { terms: new Map([['Chapter One', 'Chapitre Premier']]) };
+    const provider = fakeProvider((user, _i, system) =>
+      system?.includes('PLACEHOLDER PRESERVATION') ? tagged('no placeholders') : tagged(guillemets(sourceOf(user))));
+    const { outcome } = await run({ provider, glossary, promptOptions: { custom_instructions: 'Stay formal.' } });
+    expect(outcome.status).toBe('completed');
+
+    const calls = provider.calls.filter((c) => sourceOf(c.user).includes('Chapter One'));
+    const withTags = calls.filter((c) => c.system?.includes('PLACEHOLDER PRESERVATION'));
+    expect(withTags.length).toBe(2);
+    for (const c of withTags) expect(c.user).toContain('Chapter One -> Chapitre Premier');
+    // The token-alignment request has its placeholders cut out, which also removes the word
+    // boundary after the term ("Chapter One[id1]It" -> "Chapter OneIt"), so the term no longer
+    // matches there. The style instructions still apply to every request.
+    expect(calls.length).toBeGreaterThan(withTags.length);
+    for (const c of calls) expect(c.system).toContain('Stay formal.');
   });
 
   it('fails cleanly for a file that is not an EPUB', async () => {

@@ -481,3 +481,226 @@ Provide your corrected version now:`;
 
   return { system: systemPrompt.trim(), user: userPrompt.trim() };
 }
+
+// ============================================================================
+// GLOSSARY: NER EXTRACTION PROMPT
+// ============================================================================
+
+export const NER_TAG_IN = '<NER_JSON>';
+export const NER_TAG_OUT = '</NER_JSON>';
+
+/**
+ * Asks the model for recurring proper nouns with a suggested translation and, for characters,
+ * the gender evidenced by the passage. The gender is evidence-only with an explicit "unknown"
+ * escape hatch: a confidently wrong gender is worse than a blank the user reviews.
+ */
+export function generateNerExtractionPrompt(text: string, sourceLanguage = 'Chinese', targetLanguage = 'English'): PromptPair {
+  const systemPrompt = `You are a literary entity extractor. Your job is to read a passage written in ${sourceLanguage} and identify recurring proper nouns that a translator would want to keep consistent across an entire book.
+
+# CATEGORIES (use exactly these labels)
+
+- "character"     — named persons (李凡, Li Fan, Captain Ahab)
+- "location"      — places, regions, buildings (青玄宗大殿, Mount Tai)
+- "organization"  — sects, schools, clans, factions, companies (青玄宗, Heavenly Sword Gate)
+- "item"          — named artifacts, weapons, treasures, techniques (混沌珠, Excalibur)
+- "title"         — honorifics or named ranks tied to a person (Elder, 长老, Master)
+- "other"         — anything else worth keeping consistent (events, magical formulas)
+
+# RULES
+
+1. Extract ONLY proper nouns or named concepts that look likely to recur. Skip generic words.
+2. Do NOT translate common nouns or descriptive phrases — only named entities.
+3. For each entity, propose ONE canonical ${targetLanguage} translation. Use the standard romanization or the most natural literary rendering. Keep the proposal concise.
+4. Deduplicate: if the same entity appears multiple times in the passage, list it once.
+5. If you are unsure about an entry, omit it rather than guessing.
+6. Preserve the original ${sourceLanguage} form exactly as it appears in the text (no extra spaces, no normalization).
+
+# GENDER
+
+For entities in the "character" category, also report the character's gender. This matters because ${sourceLanguage} may not mark gender the way ${targetLanguage} does: when a passage omits the subject or uses an unmarked pronoun, a translator with no gender information defaults every character to "he" and silently corrupts the cast across a whole book.
+
+Determine gender ONLY from evidence in the passage: gendered pronouns (她 / 彼女 / she), gendered forms of address or kinship terms (姐姐, 母亲, Miss, Lady, sir), or explicit description. Do NOT guess from the name itself, and do NOT assume a protagonist is male.
+
+Report exactly one of:
+  - "female"  — the passage shows this character is female
+  - "male"    — the passage shows this character is male
+  - "unknown" — no gender evidence in the passage, or the entity is not a character
+
+"unknown" is the correct, expected answer whenever the evidence is absent. A wrong guess is far more damaging than an honest "unknown", because the user reviews unknowns but trusts stated genders.
+
+# OUTPUT FORMAT
+
+Return ONLY a JSON array wrapped between ${NER_TAG_IN} and ${NER_TAG_OUT}. No prose, no explanations.
+
+Each array element MUST be an object with these keys:
+  - "source"   (string, required) — the entity in ${sourceLanguage}
+  - "target"   (string, required) — the proposed ${targetLanguage} translation
+  - "category" (string, required) — one of the labels listed above
+  - "gender"   (string, required) — "female", "male", or "unknown"
+
+Example:
+${NER_TAG_IN}
+[
+  {"source": "李凡", "target": "Li Fan", "category": "character", "gender": "male"},
+  {"source": "林月", "target": "Lin Yue", "category": "character", "gender": "female"},
+  {"source": "沈青", "target": "Shen Qing", "category": "character", "gender": "unknown"},
+  {"source": "青玄宗", "target": "Qingxuan Sect", "category": "organization", "gender": "unknown"}
+]
+${NER_TAG_OUT}
+
+If no entities are found, return an empty array: ${NER_TAG_IN}[]${NER_TAG_OUT}.
+
+Do NOT wrap the JSON in markdown code fences. Do NOT add commentary before or after the tags.`;
+
+  const userPrompt = `# SOURCE TEXT (${sourceLanguage})
+
+${INPUT_TAG_IN}
+${text}
+${INPUT_TAG_OUT}
+
+Extract the recurring named entities now. Output the JSON array between ${NER_TAG_IN} and ${NER_TAG_OUT}, nothing else.`;
+
+  return { system: systemPrompt.trim(), user: userPrompt.trim() };
+}
+
+// ============================================================================
+// STYLE EXTRACTION PROMPT
+// ============================================================================
+
+export const STYLE_TAG_IN = '<STYLE_JSON>';
+export const STYLE_TAG_OUT = '</STYLE_JSON>';
+
+export type StyleMode = 'source' | 'model';
+
+/**
+ * Asks the model to characterise HOW a text is written and return abstract, atomic style rules.
+ * "source": the passages are the text about to be translated. "model": the passages are a
+ * reference author whose style an unrelated text should imitate.
+ */
+export function generateStyleExtractionPrompt(
+  text: string,
+  mode: StyleMode,
+  sourceLanguage = 'English',
+  targetLanguage = 'English',
+): PromptPair {
+  if (mode !== 'source' && mode !== 'model') throw new Error(`mode must be 'source' or 'model', got '${mode}'`);
+
+  let roleFraming: string;
+  let contextDirective: string;
+  let contextExample: string;
+  if (mode === 'source') {
+    roleFraming =
+      'The passages below are the SOURCE TEXT that is about to be translated. ' +
+      'Produce rules a translator must follow so that the translation reads like the original.';
+    contextDirective = `# CONTEXT FIELD (mandatory)
+
+The "context" field must be 1 to 3 sentences, at most 400 characters, written in English. Describe the world the passages take place in: the historical period (or its secondary-world equivalent), the technological level, the social and cultural frame, and anything else that would make a modern word feel out of place if used in the translation.
+
+Forbidden in "context": proper nouns, character names, place names, and any summary of the plot.
+
+This field exists so the translator never reaches for a word that belongs to a later era or a different technological level than this setting, even when it would otherwise be the most direct equivalent.`;
+    contextExample =
+      '"context": "A late-medieval frontier town under martial law, with no gunpowder ' +
+      'weapons and a rigid guild hierarchy.",';
+  } else {
+    roleFraming =
+      'The passages below are a REFERENCE WORK chosen as a stylistic model. ' +
+      'Produce rules a translator must follow to make an unrelated text read like this author.';
+    contextDirective = `# CONTEXT FIELD (mandatory)
+
+The "context" field MUST be the empty string "". These passages are only a stylistic model for an unrelated text: the reference work's own setting must never be imposed on the text that will actually be translated.`;
+    contextExample = '"context": "",';
+  }
+
+  const systemPrompt = `You are a literary style analyst. Your job is to read the passages below and characterize HOW the text is written, never WHAT it says. Ignore plot, characters, and setting entirely; focus only on the craft choices a translator could reproduce.
+
+${roleFraming}
+
+# DIMENSIONS (use exactly these labels)
+
+- "register"         — formality, distance, irony, emotional temperature
+- "narrative_voice"  — person, tense, focalization, narrator presence
+- "sentence_rhythm"  — length distribution, parataxis vs subordination, cadence
+- "lexicon"          — concrete vs abstract, recurring lexical fields, archaisms
+- "imagery"          — metaphors, similes, recurring figurative motifs
+- "dialogue"         — speech tags, orality, idiolects, interruption handling
+- "punctuation"      — em-dashes, semicolons, ellipses, exclamation frequency
+- "formatting"       — paragraph length, italics usage, section breaks
+- "other"            — anything else worth capturing that does not fit above
+
+# LANGUAGE OF THE INSTRUCTIONS
+
+Write every instruction in English, regardless of the language of the passages. This directive holds even when the passages are in one language and the translation target is a different, third language.
+
+# ABSTRACTION DIRECTIVE (mandatory)
+
+Every instruction must describe a PROPERTY of the writing, never the specific words that realize it. Naming specific vocabulary is a trap: the translator will repeat that exact vocabulary across the whole book, and it will read as a tic.
+
+Forbidden, in every instruction:
+1. No quoted material from the passages, and no quotation marks at all.
+2. No example words, phrases, idioms or turns of phrase to use.
+3. No "such as", "e.g.", "for example", "words like", "expressions like".
+4. No proper nouns, no invented terminology, no lexical field named as a word list.
+5. No instruction that can be satisfied by inserting one specific token.
+
+Describe the CHOICE being made instead: proportion, frequency, position, contrast, degree, consistency.
+
+Example:
+- rejected: Use metaphors of darkness and shadow, and words like "dusk" and "gloom".
+- accepted: Draw figurative language from a single consistent sensory field rather than varying its source from one image to the next.
+
+# RULES FOR EACH INSTRUCTION
+
+1. One imperative sentence, self-contained, actionable by a translator who has not read the passages.
+2. At most 240 characters.
+3. Must not mention characters, places, or plot from the passages.
+4. Return between 6 and 14 rules in total, at most 3 rules per dimension. Omit a dimension rather than padding it — 6 abstract rules are better than 14 that name vocabulary.
+
+${contextDirective}
+
+# OUTPUT FORMAT
+
+Return ONLY a JSON object wrapped between ${STYLE_TAG_IN} and ${STYLE_TAG_OUT}. No prose, no explanations, no markdown code fences.
+
+The JSON object MUST have these keys:
+  - "summary"         (string, required) — one sentence, at most 120 characters, usable as a preset description
+  - "suggested_name"  (string, required) — 2 to 4 lowercase words joined by underscores, ASCII only (e.g. "dry_hardboiled_noir")
+  - "context"         (string, required) — see the CONTEXT FIELD section above for the exact requirement
+  - "rules"           (array, required) — a list of objects, each with:
+      - "dimension"   (string, required) — one of the dimension labels listed above
+      - "instruction" (string, required) — the abstract, imperative style rule, in English
+      - "evidence"    (string, required, at most 120 characters) — a short quotation from the passages that justifies the rule
+
+"evidence" is the ONLY field allowed to quote the passages. It is shown to the human reviewer as justification for the rule and is discarded afterwards — it never becomes part of the preset. This separation is what lets "instruction" stay fully abstract without losing the reviewer's ability to check the claim.
+
+Example:
+${STYLE_TAG_IN}
+{
+  "summary": "Terse, present-tense narration with clipped dialogue and sparse punctuation.",
+  "suggested_name": "terse_present_tense",
+  ${contextExample}
+  "rules": [
+    {"dimension": "sentence_rhythm", "instruction": "Favor short, paratactic sentences over long subordinated ones, especially in action passages.", "evidence": "He ran. He did not look back."}
+  ]
+}
+${STYLE_TAG_OUT}
+
+Do NOT wrap the JSON in markdown code fences. Do NOT add commentary before or after the tags.`;
+
+  const languageNote =
+    mode === 'source'
+      ? `The passages are in ${sourceLanguage}. The rules you produce will be applied to a translation into ${targetLanguage}.`
+      : `The passages are already in ${targetLanguage}, the target language of the translation these rules will later be applied to.`;
+
+  const userPrompt = `# PASSAGES
+
+${languageNote}
+
+${INPUT_TAG_IN}
+${text}
+${INPUT_TAG_OUT}
+
+Produce the JSON now. Output it between ${STYLE_TAG_IN} and ${STYLE_TAG_OUT}, nothing else.`;
+
+  return { system: systemPrompt.trim(), user: userPrompt.trim() };
+}

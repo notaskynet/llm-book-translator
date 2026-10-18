@@ -65,5 +65,10 @@
     "replace_body_error": "Un capítulo no se pudo reconstruir y se dejó como en el original",
     "epub_file_not_found": "Un capítulo listado en el libro no se encontró y se omitió",
     "epub_xml_error": "Un capítulo no se pudo leer y se dejó sin traducir"
-  }
+  },
+  "style_select": "Estilo",
+  "glossary_select": "Glosario",
+  "none": "Ninguno",
+  "text_cleanup": "Corregir errores de OCR y saltos de línea rotos al traducir",
+  "tabs": "Secciones"
 }

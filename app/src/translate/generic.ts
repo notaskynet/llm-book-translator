@@ -9,6 +9,7 @@ import type { FormatAdapter, TranslationUnit } from '../formats/types';
 import { RateLimitError } from '../llm/errors';
 import type { LLMProvider, LogCallback } from '../llm/types';
 import type { PromptOptions } from '../prompts/prompts';
+import { buildChunkGlossaryBlock, type GlossaryOptions, type GlossaryRuntimeState } from '../glossary/chunkBlock';
 import { iterOrderedConcurrent } from './parallel';
 import { translateChunk } from './request';
 
@@ -41,6 +42,8 @@ export interface TranslateJobArgs {
   /** Stored with the job; must not contain API keys. */
   jobConfig?: Record<string, unknown>;
   promptOptions?: PromptOptions;
+  /** Terms to keep consistent; the entries matching each chunk are injected into its prompt. */
+  glossary?: GlossaryOptions;
   bilingual?: boolean;
   parallelWorkers?: number;
   callbacks?: TranslationCallbacks;
@@ -61,7 +64,7 @@ class ValidationFailed {
 export async function translateJob(args: TranslateJobArgs): Promise<TranslationOutcome> {
   const {
     adapter, store, translationId, provider, sourceLanguage, targetLanguage,
-    promptOptions = {}, bilingual = false, parallelWorkers = 1, callbacks = {},
+    promptOptions = {}, glossary, bilingual = false, parallelWorkers = 1, callbacks = {},
   } = args;
   const { onLog: log, onStats, shouldInterrupt } = callbacks;
 
@@ -116,6 +119,12 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
     }
     const restored = restoredCompleted.size;
 
+    // Cap warnings are shown once per job, however many chunks hit the cap.
+    const glossaryState: GlossaryRuntimeState = {};
+    const buildGlossaryBlock = glossary?.terms.size
+      ? (content: string) => buildChunkGlossaryBlock(content, glossary, { log, state: glossaryState, targetLanguage })
+      : undefined;
+
     const workers = Math.max(1, Math.trunc(parallelWorkers));
     const sequential = workers === 1;
     const maxValidationAttempts = 1 + Math.max(0, UNIT_VALIDATION_RETRIES);
@@ -135,7 +144,7 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
         if (adapter.translateUnit) {
           result = await adapter.translateUnit(unit, {
             provider, sourceLanguage, targetLanguage, promptOptions: attemptOptions,
-            previousTranslationContext, log, signal,
+            previousTranslationContext, buildGlossaryBlock, log, signal,
           });
         } else {
           ({ translation: result } = await translateChunk({
@@ -147,6 +156,7 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
             targetLanguage,
             provider,
             promptOptions: attemptOptions,
+            buildGlossaryBlock,
             log,
             signal,
           }));

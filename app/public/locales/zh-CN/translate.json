@@ -65,5 +65,10 @@
     "replace_body_error": "有一章无法重建，已保持原文",
     "epub_file_not_found": "书中列出的某一章未找到，已跳过",
     "epub_xml_error": "有一章无法读取，未翻译"
-  }
+  },
+  "style_select": "风格",
+  "glossary_select": "术语表",
+  "none": "无",
+  "text_cleanup": "翻译时修复 OCR 错误和断裂的换行",
+  "tabs": "分区"
 }

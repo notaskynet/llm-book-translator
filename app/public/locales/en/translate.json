@@ -65,5 +65,10 @@
     "replace_body_error": "A chapter could not be rebuilt and was left as in the source",
     "epub_file_not_found": "A chapter listed in the book was not found and was skipped",
     "epub_xml_error": "A chapter could not be read and was left untranslated"
-  }
+  },
+  "style_select": "Style",
+  "glossary_select": "Glossary",
+  "none": "None",
+  "text_cleanup": "Repair OCR errors and broken line breaks while translating",
+  "tabs": "Sections"
 }

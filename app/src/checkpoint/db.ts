@@ -1,9 +1,14 @@
 import Dexie, { type EntityTable, type Table } from 'dexie';
+import type { Glossary } from '../glossary/models';
+import type { Preset } from '../presets/format';
 import type { CheckpointStore, ChunkRecord, JobRecord, JobStatus } from './types';
 
-class BookTranslatorDB extends Dexie {
+/** The app's IndexedDB: translation jobs, plus the user's style presets and glossaries. */
+export class BookTranslatorDB extends Dexie {
   jobs!: EntityTable<JobRecord, 'id'>;
   chunks!: Table<ChunkRecord, [string, number]>;
+  presets!: EntityTable<Preset, 'id'>;
+  glossaries!: EntityTable<Glossary, 'id'>;
 
   constructor(name = 'llm-book-translator') {
     super(name);
@@ -11,13 +16,17 @@ class BookTranslatorDB extends Dexie {
       jobs: 'id, status, updatedAt',
       chunks: '[jobId+chunkIndex], jobId',
     });
+    this.version(2).stores({
+      presets: 'id, updatedAt',
+      glossaries: '++id, name, updatedAt',
+    });
   }
 }
 export class DexieCheckpointStore implements CheckpointStore {
   readonly db: BookTranslatorDB;
 
-  constructor(dbName?: string) {
-    this.db = new BookTranslatorDB(dbName);
+  constructor(db: BookTranslatorDB | string = new BookTranslatorDB()) {
+    this.db = typeof db === 'string' ? new BookTranslatorDB(db) : db;
   }
 
   async loadCheckpoint(jobId: string) {
