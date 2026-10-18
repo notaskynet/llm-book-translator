@@ -1,9 +1,5 @@
 import OpenAI from 'openai';
-
-/** Splits a comma/newline separated key string into a clean list. */
-export function normalizeApiKeys(raw: string): string[] {
-  return raw.split(/[,\n]/).map((k) => k.trim()).filter(Boolean);
-}
+import { normalizeApiKeys } from './keyPool';
 
 export function createClient(baseUrl: string, apiKey: string): OpenAI {
   const [first] = normalizeApiKeys(apiKey);
