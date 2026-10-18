@@ -704,3 +704,275 @@ Produce the JSON now. Output it between ${STYLE_TAG_IN} and ${STYLE_TAG_OUT}, no
 
   return { system: systemPrompt.trim(), user: userPrompt.trim() };
 }
+
+// ============================================================================
+// REFINEMENT PROMPTS
+// ============================================================================
+
+export interface RefinementPromptArgs {
+  draftTranslation: string;
+  /** Accepted for parity with the Python signature; the prompt does not use it. */
+  contextBefore?: string;
+  contextAfter?: string;
+  previousRefinedContext?: string;
+  targetLanguage?: string;
+  translateTagIn?: string;
+  translateTagOut?: string;
+  hasPlaceholders?: boolean;
+  promptOptions?: PromptOptions;
+  additionalInstructions?: string;
+  glossaryBlock?: string;
+}
+
+const REFINED_EXAMPLES: Record<string, string> = {
+  chinese: '您润色后的文本在这里',
+  french: 'Votre texte affiné ici',
+  spanish: 'Su texto refinado aquí',
+  german: 'Ihr verfeinerter Text hier',
+  japanese: '洗練されたテキストはこちら',
+  italian: 'Il tuo testo raffinato qui',
+  portuguese: 'Seu texto refinado aqui',
+  russian: 'Ваш улучшенный текст здесь',
+  korean: '다듬어진 텍스트는 여기에',
+};
+
+/**
+ * Prompt for the second pass: rewrite an already-translated draft into polished prose in the
+ * same language. The input is monolingual, so the placeholder example uses the target language
+ * on both sides.
+ */
+export function generateRefinementPrompt({
+  draftTranslation,
+  previousRefinedContext = '',
+  targetLanguage = 'English',
+  translateTagIn = TRANSLATE_TAG_IN,
+  translateTagOut = TRANSLATE_TAG_OUT,
+  hasPlaceholders = true,
+  promptOptions = {},
+  additionalInstructions = '',
+  glossaryBlock = '',
+}: RefinementPromptArgs): PromptPair {
+  const exampleFormatText = REFINED_EXAMPLES[normalizeLangKey(targetLanguage)] ?? 'Your refined text here';
+  const outputFormatSection = getOutputFormatSection(translateTagIn, translateTagOut, INPUT_TAG_IN, INPUT_TAG_OUT, '', exampleFormatText);
+  const placeholderSection = hasPlaceholders ? buildPlaceholderSection(targetLanguage, targetLanguage) : '';
+  const optionalSections = buildOptionalPromptSections(promptOptions);
+
+  let additionalInstructionsSection = '';
+  if (additionalInstructions && additionalInstructions.trim()) {
+    additionalInstructionsSection = `
+
+# ADDITIONAL REFINEMENT INSTRUCTIONS
+
+${additionalInstructions.trim()}`;
+  }
+
+  const upper = targetLanguage.toUpperCase();
+  const systemPrompt = `You are an elite ${targetLanguage} literary editor and prose stylist.
+
+# YOUR TASK: REFINE AND POLISH
+
+You will receive a DRAFT ${targetLanguage} translation that needs significant improvement.
+Your job is to REWRITE it with perfect literary ${targetLanguage} style.
+
+**THE INPUT IS:**
+- A amator, literal, or awkward ${targetLanguage} translation
+- It may have unnatural phrasing, stilted expressions, or poor flow
+- Consider it a "bad" first draft that probably needs substantial reworking
+
+**YOUR OUTPUT MUST BE:**
+- Fluent, natural ${targetLanguage} prose
+- Stylistically excellent - as if written by a skilled ${targetLanguage} author
+
+# REFINEMENT PRINCIPLES
+
+**PRIORITY ORDER:**
+1. **Natural flow** - Sentences should flow beautifully in ${targetLanguage}
+2. **Idiomatic expressions** - Use natural ${targetLanguage} idioms and phrasings
+3. **Elegant word choice** - Select the most appropriate and refined vocabulary
+4. **Rhythm and cadence** - The text should have pleasant reading rhythm
+5. **Preserve meaning** - Keep the original meaning intact while improving style
+
+**WHAT TO FIX:**
+- Awkward literal translations → Natural ${targetLanguage} expressions
+- Repetitive or dull vocabulary → Rich, varied word choices
+- Unnatural word order → Proper ${targetLanguage} syntax
+- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition
+  (e.g., "the singer sang a song" → "the singer performed a song" or "the vocalist sang a melody")
+
+**WHAT TO PRESERVE:**
+- All factual content and meaning
+- Character names and proper nouns
+- Technical terms (if any)
+${optionalSections}
+${placeholderSection}
+${additionalInstructionsSection}
+
+# CRITICAL REMINDER
+
+You are NOT translating - you are REWRITING in ${upper}.
+The input is already in ${targetLanguage}, but poorly written.
+Your output must be polished, literary-quality ${targetLanguage}.
+
+**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**
+If the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.
+Removing or corrupting placeholders will corrupt the document structure.
+Your refinement MUST maintain the exact same placeholders in the exact same positions.
+
+${outputFormatSection}`;
+
+  let previousContextBlock = '';
+  if (previousRefinedContext && previousRefinedContext.trim()) {
+    previousContextBlock = `# CONTEXT - Previous Refined Paragraph
+
+For consistency and natural flow, here's what came immediately before:
+
+${previousRefinedContext}
+
+`;
+  }
+
+  // The glossary changes per chunk, so it stays out of the (cacheable) system prompt.
+  const glossarySection = glossaryBlock && glossaryBlock.trim() ? `${glossaryBlock}\n` : '';
+
+  const userPrompt = `${previousContextBlock}${glossarySection}# DRAFT TO REFINE
+
+The following is a rough ${targetLanguage} translation that needs significant improvement.
+Rewrite it with elegant, literary-quality ${targetLanguage} prose:
+
+${INPUT_TAG_IN}
+${draftTranslation}
+${INPUT_TAG_OUT}
+
+REMINDER: Output ONLY your refined text in this exact format:
+${translateTagIn}
+your refined text here
+${translateTagOut}
+
+Start with ${translateTagIn} and end with ${translateTagOut}. Nothing before or after.
+
+Provide your refined version now:`;
+
+  return { system: systemPrompt.trim(), user: userPrompt.trim() };
+}
+
+/** Same prompt under the name the EPUB path uses; the previous-context argument is not used. */
+export function generatePostProcessingPrompt(args: Omit<RefinementPromptArgs, 'draftTranslation' | 'previousRefinedContext'> & { translatedText: string }): PromptPair {
+  const { translatedText, ...rest } = args;
+  return generateRefinementPrompt({ ...rest, draftTranslation: translatedText, previousRefinedContext: '' });
+}
+
+export interface SubtitleRefinementArgs {
+  subtitleBlocks: Array<[number, string]>;
+  previousRefinedBlock?: string;
+  targetLanguage?: string;
+  translateTagIn?: string;
+  translateTagOut?: string;
+  additionalInstructions?: string;
+  glossaryBlock?: string;
+}
+
+/** Refines a block of subtitles in one call, keeping the `[index]` markers. */
+export function generateSubtitleRefinementBlockPrompt({
+  subtitleBlocks,
+  previousRefinedBlock = '',
+  targetLanguage = 'English',
+  translateTagIn = TRANSLATE_TAG_IN,
+  translateTagOut = TRANSLATE_TAG_OUT,
+  additionalInstructions = '',
+  glossaryBlock = '',
+}: SubtitleRefinementArgs): PromptPair {
+  const outputFormatSection = getOutputFormatSection(
+    translateTagIn, translateTagOut, INPUT_TAG_IN, INPUT_TAG_OUT, SUBTITLE_FORMAT_RULES,
+    '[0]Première ligne affinée\n[1]Deuxième ligne affinée',
+  );
+
+  let additionalInstructionsSection = '';
+  if (additionalInstructions && additionalInstructions.trim()) {
+    additionalInstructionsSection = `
+
+# ADDITIONAL REFINEMENT INSTRUCTIONS
+
+${additionalInstructions.trim()}`;
+  }
+
+  const upper = targetLanguage.toUpperCase();
+  const systemPrompt = `You are an elite ${targetLanguage} subtitle editor and dialogue stylist.
+
+# YOUR TASK: REFINE A BLOCK OF SUBTITLES
+
+You will receive a block of DRAFT ${targetLanguage} subtitles, each prefixed with an [index] marker.
+Your job is to REWRITE each subtitle with natural, idiomatic ${targetLanguage} dialogue while
+preserving the index markers and the one-subtitle-per-marker structure.
+
+**THE INPUT IS:**
+- A block of draft ${targetLanguage} subtitles, possibly literal or awkward
+- Each subtitle is prefixed with [N] where N is its local index
+
+**YOUR OUTPUT MUST BE:**
+- The same number of subtitles, each prefixed with the SAME [N] marker
+- Fluent, natural spoken ${targetLanguage} suited to subtitling
+
+# REFINEMENT PRINCIPLES
+
+**PRIORITY ORDER:**
+1. **Natural dialogue** - sound like real ${targetLanguage} speech, not translation
+2. **Reading speed** - keep subtitle length viewer-friendly
+3. **Continuity** - terminology and tone consistent across the block
+4. **Preserve meaning** - keep the original meaning intact while improving style
+
+**WHAT TO FIX:**
+- Awkward literal phrasing -> natural ${targetLanguage} expressions
+- Repetitive vocabulary that is clearly an artefact of literal translation -> varied word choices
+- Unnatural word order -> proper ${targetLanguage} syntax
+
+**WHAT TO PRESERVE:**
+- The [index] markers exactly as given
+- All factual content and meaning
+- Character names and proper nouns
+- The one-subtitle-per-[index] structure (no merging, no splitting)
+- Intentional repetitions (e.g. "No. No. No.") and dialogue dashes ("- ...\\n- ...") when present in the draft
+- Inline formatting tags and any \\n line breaks inside a subtitle${additionalInstructionsSection}
+
+# CRITICAL REMINDERS
+
+You are NOT translating - you are REWRITING in ${upper}.
+The input is already in ${targetLanguage}, but possibly poorly written.
+Your output must be polished, natural ${targetLanguage} dialogue.
+
+**Index markers are MANDATORY:** every input [N] must appear exactly once in the output,
+in the same order, followed by the refined text for that subtitle.
+
+${outputFormatSection}`;
+
+  let previousRefinedBlockText = '';
+  if (previousRefinedBlock && previousRefinedBlock.trim()) {
+    previousRefinedBlockText = `# CONTEXT - Previous Refined Block
+
+For continuity and consistency, here's the previous refined block:
+
+${previousRefinedBlock}
+
+`;
+  }
+
+  const formatted = subtitleBlocks.map(([idx, text]) => `[${idx}]${text}`).join('\n');
+  const glossarySection = glossaryBlock && glossaryBlock.trim() ? `${glossaryBlock}\n` : '';
+
+  const userPrompt = `${previousRefinedBlockText}${glossarySection}# SUBTITLES TO REFINE
+
+${INPUT_TAG_IN}
+${formatted}
+${INPUT_TAG_OUT}
+
+REMINDER: Output format must be:
+${translateTagIn}
+[0]refined subtitle 0
+[1]refined subtitle 1
+${translateTagOut}
+
+Start with ${translateTagIn} and end with ${translateTagOut}. Nothing before or after.
+
+Provide your refined block now:`;
+
+  return { system: systemPrompt.trim(), user: userPrompt.trim() };
+}

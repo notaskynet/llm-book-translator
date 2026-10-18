@@ -23,7 +23,7 @@ import { getLanguageCode } from './langCodes';
 import { restoreToGlobal } from './placeholders';
 import { preserveTags, restoreTags } from './tagPreserver';
 import { updateNavLabels, updateNcxLabels } from './toc';
-import { translateEpubChunk } from './translateUnit';
+import { refineEpubChunk, translateEpubChunk } from './translateUnit';
 import { dirname, joinPath, unquote } from './zipUtils';
 import { cleanResidualPlaceholders, escapeStrayAngleBrackets } from './xmlText';
 
@@ -162,6 +162,11 @@ export class EpubAdapter implements FormatAdapter {
     const chunk = this.chunkOf(unit);
     if (!chunk) return null;
     return (await translateEpubChunk(chunk, ctx)).text;
+  }
+
+  async refineUnit(unit: TranslationUnit, ctx: UnitTranslationContext): Promise<string | null> {
+    const chunk = this.chunkOf(unit);
+    return chunk ? refineEpubChunk(chunk, ctx) : null;
   }
 
   /** Placeholder validation happens inside translateUnit, with its own fallback chain. */

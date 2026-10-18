@@ -3,7 +3,8 @@
   "drop": {
     "hint": ".txt、.srt、.epub ファイルをここにドロップするか、クリックして選択",
     "active": "ファイルをドロップして読み込み",
-    "unsupported": ".txt、.srt、.epub ファイルのみ対応しています"
+    "unsupported": ".txt、.srt、.epub ファイルのみ対応しています",
+    "hintRefine": "翻訳済みの .txt、.srt、.epub ファイルをここにドロップするか、クリックして選択"
   },
   "source": "原文の言語",
   "target": "翻訳先の言語",
@@ -30,7 +31,8 @@
       "prepare_failed": "ファイルを読み込めませんでした。",
       "no_units": "ファイルに翻訳可能なテキストが見つかりませんでした。",
       "reconstruct_failed": "出力ファイルを作成できませんでした。"
-    }
+    },
+    "refining": "{{name}} を推敲中…"
   },
   "resume": {
     "title": "未完了の翻訳",
@@ -40,7 +42,8 @@
       "running": "中断",
       "paused": "一時停止",
       "partial": "一部完了"
-    }
+    },
+    "refineBadge": "推敲"
   },
   "log": {
     "title": "アクティビティ",
@@ -70,5 +73,11 @@
   "glossary_select": "用語集",
   "none": "なし",
   "text_cleanup": "翻訳時に OCR の誤りや壊れた改行を修正する",
-  "tabs": "セクション"
+  "tabs": "セクション",
+  "task": "タスク",
+  "task_translate": "翻訳",
+  "task_refine": "既存の翻訳を推敲する",
+  "refine_after": "翻訳後に推敲する（2回目のパス）",
+  "file_language": "ファイルの言語",
+  "download_draft": "推敲前の翻訳をダウンロード"
 }

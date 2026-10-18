@@ -201,3 +201,116 @@ test('an EPUB is translated with a glossary applied', async ({ page }) => {
   const zip = await JSZip.loadAsync((await import('node:fs')).readFileSync((await (await download).path())!));
   expect(Object.keys(zip.files)[0]).toBe('mimetype');
 });
+
+test('a translation is polished in a second pass, and the draft stays available', async ({ page }) => {
+  const record: Array<{ system: string; user: string }> = [];
+  await mockLlm(page, {
+    record,
+    respond: (system, user) => {
+      if (!system.includes('literary editor')) return undefined;
+      const draft = /<SOURCE_TEXT>\n([\s\S]*?)\n<\/SOURCE_TEXT>/.exec(user)?.[1] ?? '';
+      return `<TRANSLATION>POLI ${draft}</TRANSLATION>`;
+    },
+  });
+  await connect(page);
+  await page.getByText('Options').click();
+  await page.getByLabel('Polish the translation afterwards (second pass)').check();
+
+  await page.locator('input[type=file]').setInputFiles(file());
+  await expect(page.getByRole('status').last()).toContainText('Done');
+
+  const refineCalls = record.filter((r) => r.system.includes('literary editor'));
+  const translateCalls = record.filter((r) => !r.system.includes('literary editor'));
+  expect(translateCalls.length).toBeGreaterThan(1);
+  expect(refineCalls.length).toBe(translateCalls.length);
+  // The polish pass starts from the translation, not from the original.
+  expect(refineCalls[0].user).toContain('FR Paragraph 0.');
+
+  const polished = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download', exact: true }).click();
+  const dl = await polished;
+  expect(dl.suggestedFilename()).toBe('book (French) (refined).txt');
+  const text = (await import('node:fs')).readFileSync((await dl.path())!, 'utf8');
+  expect(text).toContain('POLI FR Paragraph 0.');
+
+  const draft = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download the translation before polishing' }).click();
+  const draftFile = await draft;
+  expect(draftFile.suggestedFilename()).toBe('book (French).txt');
+  expect((await import('node:fs')).readFileSync((await draftFile.path())!, 'utf8')).not.toContain('POLI');
+});
+
+test('an already translated file can be polished on its own', async ({ page }) => {
+  const record: Array<{ system: string; user: string }> = [];
+  await mockLlm(page, {
+    record,
+    respond: (_system, user) => `<TRANSLATION>POLI ${/<SOURCE_TEXT>\n([\s\S]*?)\n<\/SOURCE_TEXT>/.exec(user)?.[1] ?? ''}</TRANSLATION>`,
+  });
+  await connect(page);
+  await page.getByLabel('Polish an existing translation').check();
+  await expect(page.getByLabel('Source language')).toHaveCount(0); // only the file's own language is asked for
+
+  await page.locator('input[type=file]').setInputFiles(file('translated.txt'));
+  await expect(page.getByRole('status').last()).toContainText('Done');
+  expect(record.every((r) => r.system.includes('literary editor'))).toBe(true);
+
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download', exact: true }).click();
+  expect((await download).suggestedFilename()).toBe('translated (refined).txt');
+});
+
+test('Sample & Compare runs two LLMs side by side and shows their differences', async ({ page }) => {
+  const record: Array<{ system: string; user: string }> = [];
+  await mockLlm(page, {
+    record,
+    respond: (system, user) => {
+      const source = /<SOURCE_TEXT>\n([\s\S]*?)\n<\/SOURCE_TEXT>/.exec(user)?.[1] ?? '';
+      const model = system.includes('Be lyrical.') ? 'lyrical' : 'plain';
+      return `<TRANSLATION>${model.toUpperCase()}: ${source.slice(0, 30)}</TRANSLATION>`;
+    },
+  });
+  await connect(page);
+
+  // A style the second column will use.
+  await page.getByRole('tab', { name: 'Styles' }).click();
+  await page.getByRole('button', { name: 'New blank style' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Edit style' });
+  await dialog.getByLabel('Style name').fill('Lyrical');
+  await dialog.getByRole('button', { name: 'Add rule' }).click();
+  await dialog.getByRole('textbox', { name: 'Style rules' }).fill('Be lyrical');
+  await dialog.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('tab', { name: 'Sample & Compare' }).click();
+
+  const longBook = Array.from({ length: 14 }, (_, i) => `Paragraph ${i}. ${'The traveller walked slowly along the old road. '.repeat(30)}`).join('\n\n');
+  await page.getByLabel('Drop a book to sample').setInputFiles(file('long.txt', longBook));
+  await expect(page.getByText('Selected book')).toBeVisible();
+  await expect(page.getByRole('table').getByRole('row')).toHaveCount(6); // header + 5 extracts
+
+  await page.getByRole('button', { name: 'Add an LLM' }).click();
+  await page.getByLabel('Style 2').selectOption('Lyrical');
+  await page.getByRole('button', { name: 'Run', exact: true }).click();
+  await expect(page.getByText('Sample run completed.')).toBeVisible();
+
+  await expect(page.getByText(/PLAIN: /)).toHaveCount(5);
+  await expect(page.getByText(/LYRICAL: /)).toHaveCount(5);
+  // The style only reached the second column.
+  expect(record.filter((r) => r.system.includes('Be lyrical.'))).toHaveLength(5);
+  expect(record.filter((r) => !r.system.includes('Be lyrical.'))).toHaveLength(5);
+
+  await page.getByLabel('Highlight differences from the first LLM').check();
+  await expect(page.locator('mark').first()).toBeVisible();
+
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.getByRole('button', { name: 'Copy as Markdown' }).click();
+  await expect(page.getByText('Markdown copied to clipboard.')).toBeVisible();
+  const markdown = await page.evaluate(() => navigator.clipboard.readText());
+  expect(markdown.split('\n')[0]).toContain('LLM 1');
+  expect(markdown.split('\n')).toHaveLength(7);
+
+  // Adding another extract and running again only translates the new row.
+  record.length = 0;
+  await page.getByRole('button', { name: 'Add a sample' }).click();
+  await page.getByRole('button', { name: 'Run', exact: true }).click();
+  await expect(page.getByText('Sample run completed.')).toBeVisible();
+  expect(record).toHaveLength(2);
+});

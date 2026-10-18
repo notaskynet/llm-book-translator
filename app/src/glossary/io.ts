@@ -26,7 +26,7 @@ function toTerm(entry: Record<string, unknown>): GlossaryTerm | null {
 }
 
 export function termsFromCsv(text: string): GlossaryTerm[] {
-  const parsed = Papa.parse<Record<string, string>>(text.replace(/^﻿/, ''), { header: true, skipEmptyLines: true });
+  const parsed = Papa.parse<Record<string, string>>(text.replace(/^\uFEFF/, ''), { header: true, skipEmptyLines: true });
   return parsed.data.map(toTerm).filter((t): t is GlossaryTerm => t !== null);
 }
 
@@ -52,7 +52,7 @@ export function parseGlossaryFile(fileName: string, text: string): GlossaryTerm[
     let payload: unknown = {};
     if (text.trim()) {
       try {
-        payload = JSON.parse(text.replace(/^﻿/, ''));
+        payload = JSON.parse(text.replace(/^\uFEFF/, ''));
       } catch (err) {
         throw new Error(`Invalid JSON file: ${(err as Error).message}`);
       }

@@ -4178,5 +4178,316 @@
     "refinement": "Be formal."
    }
   }
+ ],
+ "refine_prompts": [
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "French",
+    "has_placeholders": false
+   },
+   "system": "You are an elite French literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT French translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary French style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward French translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural French prose\n- Stylistically excellent - as if written by a skilled French author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in French\n2. **Idiomatic expressions** - Use natural French idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural French expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper French syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in FRENCH.\nThe input is already in French, but poorly written.\nYour output must be polished, literary-quality French.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nVotre texte affiné ici\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough French translation that needs significant improvement.\nRewrite it with elegant, literary-quality French prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "French",
+    "has_placeholders": true
+   },
+   "system": "You are an elite French literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT French translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary French style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward French translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural French prose\n- Stylistically excellent - as if written by a skilled French author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in French\n2. **Idiomatic expressions** - Use natural French idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural French expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper French syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n# PLACEHOLDER PRESERVATION (CRITICAL)\n\nYou will encounter placeholders like: [id0], [id1], [id2]\nThese represent HTML/XML tags that have been temporarily replaced.\n\n**UNIFIED FORMAT:**\nAll placeholders use the [idN] format: [id0], [id1], [id2]...\nThis semantic format provides the highest accuracy for preservation.\n\n**MANDATORY RULES:**\n1. Keep ALL placeholders EXACTLY as they appear\n2. Do NOT translate, modify, remove, or explain them\n3. Maintain their EXACT position in the sentence structure\n4. Do NOT add spaces around them unless present in the source\n\n**Example (French → French):**\n\nSource: \"C'est un texte [id0]important[id1].\"\n✅ Correct: \"C'est un texte [id0]important[id1].\"\n❌ WRONG: \"C'est un texte important.\" (placeholders removed)\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in FRENCH.\nThe input is already in French, but poorly written.\nYour output must be polished, literary-quality French.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nVotre texte affiné ici\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough French translation that needs significant improvement.\nRewrite it with elegant, literary-quality French prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "Chinese",
+    "has_placeholders": false
+   },
+   "system": "You are an elite Chinese literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT Chinese translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary Chinese style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward Chinese translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural Chinese prose\n- Stylistically excellent - as if written by a skilled Chinese author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in Chinese\n2. **Idiomatic expressions** - Use natural Chinese idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural Chinese expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper Chinese syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in CHINESE.\nThe input is already in Chinese, but poorly written.\nYour output must be polished, literary-quality Chinese.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\n您润色后的文本在这里\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough Chinese translation that needs significant improvement.\nRewrite it with elegant, literary-quality Chinese prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "Chinese",
+    "has_placeholders": true
+   },
+   "system": "You are an elite Chinese literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT Chinese translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary Chinese style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward Chinese translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural Chinese prose\n- Stylistically excellent - as if written by a skilled Chinese author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in Chinese\n2. **Idiomatic expressions** - Use natural Chinese idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural Chinese expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper Chinese syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n# PLACEHOLDER PRESERVATION (CRITICAL)\n\nYou will encounter placeholders like: [id0], [id1], [id2]\nThese represent HTML/XML tags that have been temporarily replaced.\n\n**UNIFIED FORMAT:**\nAll placeholders use the [idN] format: [id0], [id1], [id2]...\nThis semantic format provides the highest accuracy for preservation.\n\n**MANDATORY RULES:**\n1. Keep ALL placeholders EXACTLY as they appear\n2. Do NOT translate, modify, remove, or explain them\n3. Maintain their EXACT position in the sentence structure\n4. Do NOT add spaces around them unless present in the source\n\n**Example (Chinese → Chinese):**\n\nSource: \"这是[id0]重要的[id1]文本。\"\n✅ Correct: \"这是[id0]重要的[id1]文本。\"\n❌ WRONG: \"这是重要的文本。\" (placeholders removed)\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in CHINESE.\nThe input is already in Chinese, but poorly written.\nYour output must be polished, literary-quality Chinese.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\n您润色后的文本在这里\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough Chinese translation that needs significant improvement.\nRewrite it with elegant, literary-quality Chinese prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "Portuguese (Brazil)",
+    "has_placeholders": false
+   },
+   "system": "You are an elite Portuguese (Brazil) literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT Portuguese (Brazil) translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary Portuguese (Brazil) style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward Portuguese (Brazil) translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural Portuguese (Brazil) prose\n- Stylistically excellent - as if written by a skilled Portuguese (Brazil) author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in Portuguese (Brazil)\n2. **Idiomatic expressions** - Use natural Portuguese (Brazil) idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural Portuguese (Brazil) expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper Portuguese (Brazil) syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in PORTUGUESE (BRAZIL).\nThe input is already in Portuguese (Brazil), but poorly written.\nYour output must be polished, literary-quality Portuguese (Brazil).\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nSeu texto refinado aqui\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough Portuguese (Brazil) translation that needs significant improvement.\nRewrite it with elegant, literary-quality Portuguese (Brazil) prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "Portuguese (Brazil)",
+    "has_placeholders": true
+   },
+   "system": "You are an elite Portuguese (Brazil) literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT Portuguese (Brazil) translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary Portuguese (Brazil) style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward Portuguese (Brazil) translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural Portuguese (Brazil) prose\n- Stylistically excellent - as if written by a skilled Portuguese (Brazil) author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in Portuguese (Brazil)\n2. **Idiomatic expressions** - Use natural Portuguese (Brazil) idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural Portuguese (Brazil) expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper Portuguese (Brazil) syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n# PLACEHOLDER PRESERVATION (CRITICAL)\n\nYou will encounter placeholders like: [id0], [id1], [id2]\nThese represent HTML/XML tags that have been temporarily replaced.\n\n**UNIFIED FORMAT:**\nAll placeholders use the [idN] format: [id0], [id1], [id2]...\nThis semantic format provides the highest accuracy for preservation.\n\n**MANDATORY RULES:**\n1. Keep ALL placeholders EXACTLY as they appear\n2. Do NOT translate, modify, remove, or explain them\n3. Maintain their EXACT position in the sentence structure\n4. Do NOT add spaces around them unless present in the source\n\n**Example (Portuguese (Brazil) → Portuguese (Brazil)):**\n\nSource: \"Este é um texto [id0]importante[id1].\"\n✅ Correct: \"Este é um texto [id0]importante[id1].\"\n❌ WRONG: \"Este é um texto importante.\" (placeholders removed)\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in PORTUGUESE (BRAZIL).\nThe input is already in Portuguese (Brazil), but poorly written.\nYour output must be polished, literary-quality Portuguese (Brazil).\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nSeu texto refinado aqui\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough Portuguese (Brazil) translation that needs significant improvement.\nRewrite it with elegant, literary-quality Portuguese (Brazil) prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "Klingon",
+    "has_placeholders": false
+   },
+   "system": "You are an elite Klingon literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT Klingon translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary Klingon style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward Klingon translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural Klingon prose\n- Stylistically excellent - as if written by a skilled Klingon author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in Klingon\n2. **Idiomatic expressions** - Use natural Klingon idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural Klingon expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper Klingon syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in KLINGON.\nThe input is already in Klingon, but poorly written.\nYour output must be polished, literary-quality Klingon.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nYour refined text here\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough Klingon translation that needs significant improvement.\nRewrite it with elegant, literary-quality Klingon prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Un brouillon [id0]maladroit[id1].",
+    "previous_refined_context": "Texte précédent.",
+    "target_language": "Klingon",
+    "has_placeholders": true
+   },
+   "system": "You are an elite Klingon literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT Klingon translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary Klingon style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward Klingon translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural Klingon prose\n- Stylistically excellent - as if written by a skilled Klingon author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in Klingon\n2. **Idiomatic expressions** - Use natural Klingon idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural Klingon expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper Klingon syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n# PLACEHOLDER PRESERVATION (CRITICAL)\n\nYou will encounter placeholders like: [id0], [id1], [id2]\nThese represent HTML/XML tags that have been temporarily replaced.\n\n**UNIFIED FORMAT:**\nAll placeholders use the [idN] format: [id0], [id1], [id2]...\nThis semantic format provides the highest accuracy for preservation.\n\n**MANDATORY RULES:**\n1. Keep ALL placeholders EXACTLY as they appear\n2. Do NOT translate, modify, remove, or explain them\n3. Maintain their EXACT position in the sentence structure\n4. Do NOT add spaces around them unless present in the source\n\n**Example (Klingon → Klingon):**\n\nSource: \"This is [id0]important[id1] text.\"\n✅ Correct: \"This is [id0]important[id1] text.\"\n❌ WRONG: \"This is important text.\" (placeholders removed)\n\n\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in KLINGON.\nThe input is already in Klingon, but poorly written.\nYour output must be polished, literary-quality Klingon.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nYour refined text here\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Paragraph\n\nFor consistency and natural flow, here's what came immediately before:\n\nTexte précédent.\n\n# DRAFT TO REFINE\n\nThe following is a rough Klingon translation that needs significant improvement.\nRewrite it with elegant, literary-quality Klingon prose:\n\n<SOURCE_TEXT>\nUn brouillon [id0]maladroit[id1].\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  },
+  {
+   "args": {
+    "draft_translation": "Brouillon.",
+    "target_language": "German",
+    "has_placeholders": false,
+    "prompt_options": {
+     "text_cleanup": true
+    },
+    "additional_instructions": "Keep it formal.",
+    "glossary_block": "# GLOSSARY\n- night = Nacht"
+   },
+   "system": "You are an elite German literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT German translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary German style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward German translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural German prose\n- Stylistically excellent - as if written by a skilled German author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in German\n2. **Idiomatic expressions** - Use natural German idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural German expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper German syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n# TEXT CLEANUP (Source Defects Correction)\n\nThe source text may contain OCR errors, formatting artifacts, or typographic defects.\n**CORRECT THESE ISSUES during translation:**\n\n- **Line breaks**: Fix broken words (e.g., \"trans-\\nlation\" → \"translation\")\n- **Spacing**: Remove double spaces, fix missing spaces after punctuation\n- **Punctuation**: Correct misplaced or missing punctuation marks\n- **Paragraph flow**: Merge incorrectly split paragraphs, preserve intentional breaks\n\n**DO NOT** add content, remove meaningful text, or alter the author's style.\n\n\n\n# ADDITIONAL REFINEMENT INSTRUCTIONS\n\nKeep it formal.\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in GERMAN.\nThe input is already in German, but poorly written.\nYour output must be polished, literary-quality German.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nIhr verfeinerter Text hier\n</TRANSLATION>",
+   "user": "# GLOSSARY\n- night = Nacht\n# DRAFT TO REFINE\n\nThe following is a rough German translation that needs significant improvement.\nRewrite it with elegant, literary-quality German prose:\n\n<SOURCE_TEXT>\nBrouillon.\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  }
+ ],
+ "subtitle_refine_prompts": [
+  {
+   "args": {
+    "subtitle_blocks": [
+     [
+      0,
+      "Hola."
+     ],
+     [
+      1,
+      "<i>¿Cómo estás?</i>"
+     ]
+    ],
+    "previous_refined_block": "[0]Hola.",
+    "target_language": "Spanish",
+    "additional_instructions": "Be casual.",
+    "glossary_block": "# GLOSSARY\n- a = b"
+   },
+   "system": "You are an elite Spanish subtitle editor and dialogue stylist.\n\n# YOUR TASK: REFINE A BLOCK OF SUBTITLES\n\nYou will receive a block of DRAFT Spanish subtitles, each prefixed with an [index] marker.\nYour job is to REWRITE each subtitle with natural, idiomatic Spanish dialogue while\npreserving the index markers and the one-subtitle-per-marker structure.\n\n**THE INPUT IS:**\n- A block of draft Spanish subtitles, possibly literal or awkward\n- Each subtitle is prefixed with [N] where N is its local index\n\n**YOUR OUTPUT MUST BE:**\n- The same number of subtitles, each prefixed with the SAME [N] marker\n- Fluent, natural spoken Spanish suited to subtitling\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural dialogue** - sound like real Spanish speech, not translation\n2. **Reading speed** - keep subtitle length viewer-friendly\n3. **Continuity** - terminology and tone consistent across the block\n4. **Preserve meaning** - keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal phrasing -> natural Spanish expressions\n- Repetitive vocabulary that is clearly an artefact of literal translation -> varied word choices\n- Unnatural word order -> proper Spanish syntax\n\n**WHAT TO PRESERVE:**\n- The [index] markers exactly as given\n- All factual content and meaning\n- Character names and proper nouns\n- The one-subtitle-per-[index] structure (no merging, no splitting)\n- Intentional repetitions (e.g. \"No. No. No.\") and dialogue dashes (\"- ...\\n- ...\") when present in the draft\n- Inline formatting tags and any \\n line breaks inside a subtitle\n\n# ADDITIONAL REFINEMENT INSTRUCTIONS\n\nBe casual.\n\n# CRITICAL REMINDERS\n\nYou are NOT translating - you are REWRITING in SPANISH.\nThe input is already in Spanish, but possibly poorly written.\nYour output must be polished, natural Spanish dialogue.\n\n**Index markers are MANDATORY:** every input [N] must appear exactly once in the output,\nin the same order, followed by the refined text for that subtitle.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n6. Each subtitle has an index marker: [index]text - PRESERVE these markers exactly\n7. Keep ONE [index] per subtitle - do NOT merge or split subtitles\n8. Maintain line breaks between indexed subtitles\n9. Preserve inline tags (<i>, <b>, <u>, <font ...>, {\\an8}, etc.) and any \\n line breaks INSIDE a subtitle exactly as in the source\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\n[0]Première ligne affinée\n[1]Deuxième ligne affinée\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Block\n\nFor continuity and consistency, here's the previous refined block:\n\n[0]Hola.\n\n# GLOSSARY\n- a = b\n# SUBTITLES TO REFINE\n\n<SOURCE_TEXT>\n[0]Hola.\n[1]<i>¿Cómo estás?</i>\n</SOURCE_TEXT>\n\nREMINDER: Output format must be:\n<TRANSLATION>\n[0]refined subtitle 0\n[1]refined subtitle 1\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined block now:"
+  },
+  {
+   "args": {
+    "subtitle_blocks": [
+     [
+      0,
+      "Hola."
+     ],
+     [
+      1,
+      "<i>¿Cómo estás?</i>"
+     ]
+    ],
+    "previous_refined_block": "[0]Hola.",
+    "target_language": "Japanese",
+    "additional_instructions": "Be casual.",
+    "glossary_block": "# GLOSSARY\n- a = b"
+   },
+   "system": "You are an elite Japanese subtitle editor and dialogue stylist.\n\n# YOUR TASK: REFINE A BLOCK OF SUBTITLES\n\nYou will receive a block of DRAFT Japanese subtitles, each prefixed with an [index] marker.\nYour job is to REWRITE each subtitle with natural, idiomatic Japanese dialogue while\npreserving the index markers and the one-subtitle-per-marker structure.\n\n**THE INPUT IS:**\n- A block of draft Japanese subtitles, possibly literal or awkward\n- Each subtitle is prefixed with [N] where N is its local index\n\n**YOUR OUTPUT MUST BE:**\n- The same number of subtitles, each prefixed with the SAME [N] marker\n- Fluent, natural spoken Japanese suited to subtitling\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural dialogue** - sound like real Japanese speech, not translation\n2. **Reading speed** - keep subtitle length viewer-friendly\n3. **Continuity** - terminology and tone consistent across the block\n4. **Preserve meaning** - keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal phrasing -> natural Japanese expressions\n- Repetitive vocabulary that is clearly an artefact of literal translation -> varied word choices\n- Unnatural word order -> proper Japanese syntax\n\n**WHAT TO PRESERVE:**\n- The [index] markers exactly as given\n- All factual content and meaning\n- Character names and proper nouns\n- The one-subtitle-per-[index] structure (no merging, no splitting)\n- Intentional repetitions (e.g. \"No. No. No.\") and dialogue dashes (\"- ...\\n- ...\") when present in the draft\n- Inline formatting tags and any \\n line breaks inside a subtitle\n\n# ADDITIONAL REFINEMENT INSTRUCTIONS\n\nBe casual.\n\n# CRITICAL REMINDERS\n\nYou are NOT translating - you are REWRITING in JAPANESE.\nThe input is already in Japanese, but possibly poorly written.\nYour output must be polished, natural Japanese dialogue.\n\n**Index markers are MANDATORY:** every input [N] must appear exactly once in the output,\nin the same order, followed by the refined text for that subtitle.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n6. Each subtitle has an index marker: [index]text - PRESERVE these markers exactly\n7. Keep ONE [index] per subtitle - do NOT merge or split subtitles\n8. Maintain line breaks between indexed subtitles\n9. Preserve inline tags (<i>, <b>, <u>, <font ...>, {\\an8}, etc.) and any \\n line breaks INSIDE a subtitle exactly as in the source\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\n[0]Première ligne affinée\n[1]Deuxième ligne affinée\n</TRANSLATION>",
+   "user": "# CONTEXT - Previous Refined Block\n\nFor continuity and consistency, here's the previous refined block:\n\n[0]Hola.\n\n# GLOSSARY\n- a = b\n# SUBTITLES TO REFINE\n\n<SOURCE_TEXT>\n[0]Hola.\n[1]<i>¿Cómo estás?</i>\n</SOURCE_TEXT>\n\nREMINDER: Output format must be:\n<TRANSLATION>\n[0]refined subtitle 0\n[1]refined subtitle 1\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined block now:"
+  }
+ ],
+ "post_processing_prompts": [
+  {
+   "args": {
+    "translated_text": "[id0]Texte[id1]",
+    "target_language": "French",
+    "context_before": "a",
+    "context_after": "b",
+    "additional_instructions": "X",
+    "has_placeholders": true,
+    "glossary_block": ""
+   },
+   "system": "You are an elite French literary editor and prose stylist.\n\n# YOUR TASK: REFINE AND POLISH\n\nYou will receive a DRAFT French translation that needs significant improvement.\nYour job is to REWRITE it with perfect literary French style.\n\n**THE INPUT IS:**\n- A amator, literal, or awkward French translation\n- It may have unnatural phrasing, stilted expressions, or poor flow\n- Consider it a \"bad\" first draft that probably needs substantial reworking\n\n**YOUR OUTPUT MUST BE:**\n- Fluent, natural French prose\n- Stylistically excellent - as if written by a skilled French author\n\n# REFINEMENT PRINCIPLES\n\n**PRIORITY ORDER:**\n1. **Natural flow** - Sentences should flow beautifully in French\n2. **Idiomatic expressions** - Use natural French idioms and phrasings\n3. **Elegant word choice** - Select the most appropriate and refined vocabulary\n4. **Rhythm and cadence** - The text should have pleasant reading rhythm\n5. **Preserve meaning** - Keep the original meaning intact while improving style\n\n**WHAT TO FIX:**\n- Awkward literal translations → Natural French expressions\n- Repetitive or dull vocabulary → Rich, varied word choices\n- Unnatural word order → Proper French syntax\n- **Lexical repetitions and cacophony** → Use synonyms to avoid same-root word repetition\n  (e.g., \"the singer sang a song\" → \"the singer performed a song\" or \"the vocalist sang a melody\")\n\n**WHAT TO PRESERVE:**\n- All factual content and meaning\n- Character names and proper nouns\n- Technical terms (if any)\n\n# PLACEHOLDER PRESERVATION (CRITICAL)\n\nYou will encounter placeholders like: [id0], [id1], [id2]\nThese represent HTML/XML tags that have been temporarily replaced.\n\n**UNIFIED FORMAT:**\nAll placeholders use the [idN] format: [id0], [id1], [id2]...\nThis semantic format provides the highest accuracy for preservation.\n\n**MANDATORY RULES:**\n1. Keep ALL placeholders EXACTLY as they appear\n2. Do NOT translate, modify, remove, or explain them\n3. Maintain their EXACT position in the sentence structure\n4. Do NOT add spaces around them unless present in the source\n\n**Example (French → French):**\n\nSource: \"C'est un texte [id0]important[id1].\"\n✅ Correct: \"C'est un texte [id0]important[id1].\"\n❌ WRONG: \"C'est un texte important.\" (placeholders removed)\n\n\n\n# ADDITIONAL REFINEMENT INSTRUCTIONS\n\nX\n\n# CRITICAL REMINDER\n\nYou are NOT translating - you are REWRITING in FRENCH.\nThe input is already in French, but poorly written.\nYour output must be polished, literary-quality French.\n\n**⚠️ PLACEHOLDER PRESERVATION IS ABSOLUTELY CRITICAL:**\nIf the input contains ANY placeholders (like [id0], [id1], etc.), you MUST preserve them EXACTLY.\nRemoving or corrupting placeholders will corrupt the document structure.\nYour refinement MUST maintain the exact same placeholders in the exact same positions.\n\n# OUTPUT FORMAT\n\n**CRITICAL OUTPUT RULES:**\n1. Translate ONLY the text between \"<SOURCE_TEXT>\" and \"</SOURCE_TEXT>\" tags\n2. Your response MUST start with <TRANSLATION> (first characters, no text before)\n3. Your response MUST end with </TRANSLATION> (last characters, no text after)\n4. Include NOTHING before <TRANSLATION> and NOTHING after </TRANSLATION>\n5. Do NOT add explanations, comments, notes, or greetings\n\n**INCORRECT examples (DO NOT do this):**\n❌ \"Here is the translation: <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"<TRANSLATION>Text...</TRANSLATION> (Additional comment)\"\n❌ \"Sure! <TRANSLATION>Text...</TRANSLATION>\"\n❌ \"Text...\" (missing tags entirely)\n❌ \"<TRANSLATION>Text...\" (missing closing tag)\n\n**CORRECT format (ONLY this):**\n✅ <TRANSLATION>\nVotre texte affiné ici\n</TRANSLATION>",
+   "user": "# DRAFT TO REFINE\n\nThe following is a rough French translation that needs significant improvement.\nRewrite it with elegant, literary-quality French prose:\n\n<SOURCE_TEXT>\n[id0]Texte[id1]\n</SOURCE_TEXT>\n\nREMINDER: Output ONLY your refined text in this exact format:\n<TRANSLATION>\nyour refined text here\n</TRANSLATION>\n\nStart with <TRANSLATION> and end with </TRANSLATION>. Nothing before or after.\n\nProvide your refined version now:"
+  }
+ ],
+ "clean_text": [
+  {
+   "text": "",
+   "result": ""
+  },
+  {
+   "text": "  spaced   out  text ",
+   "result": "spaced out text"
+  },
+  {
+   "text": "Hello , world !",
+   "result": "Hello, world!"
+  },
+  {
+   "text": "Une phrase : avec des espaces ; et plus ?",
+   "result": "Une phrase: avec des espaces; et plus?"
+  },
+  {
+   "text": "a\n\n\n\nb",
+   "result": "a\n\nb"
+  },
+  {
+   "text": "Fish &amp; chips &lt;3 &hellip; &nbsp;&nbsp;x",
+   "result": "Fish & chips <3 …   x"
+  },
+  {
+   "text": "&mdash; dash &ndash; and &quot;quotes&quot; &#39;x&apos;",
+   "result": "— dash – and \"quotes\" 'x'"
+  }
+ ],
+ "sample_indices": [
+  {
+   "total": 10,
+   "n": 3,
+   "result": [
+    2,
+    4,
+    7
+   ]
+  },
+  {
+   "total": 10,
+   "n": 5,
+   "result": [
+    2,
+    3,
+    4,
+    6,
+    8
+   ]
+  },
+  {
+   "total": 5,
+   "n": 5,
+   "result": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "total": 3,
+   "n": 1,
+   "result": [
+    1
+   ]
+  },
+  {
+   "total": 4,
+   "n": 10,
+   "result": [
+    1,
+    2
+   ]
+  },
+  {
+   "total": 100,
+   "n": 7,
+   "result": [
+    12,
+    25,
+    37,
+    50,
+    62,
+    74,
+    87
+   ]
+  },
+  {
+   "total": 20,
+   "n": 2,
+   "result": [
+    6,
+    13
+   ]
+  },
+  {
+   "total": 3,
+   "n": 3,
+   "result": [
+    1
+   ]
+  },
+  {
+   "total": 2,
+   "n": 1,
+   "error": "document too small for sampling"
+  },
+  {
+   "total": 10,
+   "n": 0,
+   "error": "n must be >= 1"
+  }
+ ],
+ "cap_chunk": [
+  {
+   "text": "Short.",
+   "max": 100,
+   "result": "Short.",
+   "capped": false
+  },
+  {
+   "text": "The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. ",
+   "max": 100,
+   "result": "The traveller walked slowly along the old road. The traveller walked slowly along the old road.",
+   "capped": true
+  },
+  {
+   "text": "The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. ",
+   "max": 10,
+   "result": "The traveller walked slowly along the old road.",
+   "capped": true
+  },
+  {
+   "text": "No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text ",
+   "max": 50,
+   "result": "No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text No terminator in this very long text ",
+   "capped": false
+  },
+  {
+   "text": "He said: hello. Then left! Why? Nobody knew.",
+   "max": 20,
+   "result": "He said: hello.",
+   "capped": true
+  },
+  {
+   "text": "第一句。第二句。第三句。",
+   "max": 6,
+   "result": "第一句。",
+   "capped": true
+  },
+  {
+   "text": "He said \"stop.\" Then left.",
+   "max": 14,
+   "result": "He said \"stop.",
+   "capped": true
+  }
  ]
 }

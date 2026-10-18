@@ -48,7 +48,7 @@ function normalizeRules(rules: unknown): StyleRule[] {
 
 /** Reads a preset file's content. Throws on a YAML file that is not a mapping. */
 export function parsePreset(filename: string, content: string): Omit<Preset, 'updatedAt'> {
-  const text = content.replace(/^﻿/, '');
+  const text = content.replace(/^\uFEFF/, '');
   const name = filename.replace(/\.(txt|ya?ml)$/i, '');
   const base = {
     id: slugifyPresetName(name), name, description: '', mode: null as StyleMode | null, context: '',

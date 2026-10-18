@@ -6,6 +6,8 @@
 //   3. Give up: the chunk stays in the source language and the unit is marked failed.
 
 import { MAX_TRANSLATION_ATTEMPTS } from '../config';
+import { ContextOverflowError } from '../llm/errors';
+import { generatePostProcessingPrompt } from '../prompts/prompts';
 import type { UnitTranslationContext } from '../formats/types';
 import { translateChunk } from '../translate/request';
 import type { HtmlChunk } from './htmlChunker';
@@ -61,4 +63,52 @@ export async function translateEpubChunk(
   // Phase 3
   log?.('fallback_untranslated', 'All translation attempts failed - this chunk stays in the source language');
   return { text: null, outcome: 'untranslated' };
+}
+
+/**
+ * Polishes one chunk that carries placeholders (port of _refine_epub_chunks). The refined text is
+ * accepted only if its placeholders still validate; otherwise the chunk keeps its draft. No
+ * glossary here, as in the Python version.
+ */
+export async function refineEpubChunk(chunk: HtmlChunk, ctx: UnitTranslationContext): Promise<string | null> {
+  const { provider, targetLanguage, promptOptions, log, signal } = ctx;
+
+  // Pure markup (a cover page): nothing to polish, and an empty answer would wipe the body.
+  if (isTextFreeChunk(chunk.text)) return chunk.text;
+
+  const prompt = generatePostProcessingPrompt({
+    translatedText: chunk.text,
+    targetLanguage,
+    additionalInstructions: String(promptOptions.refinement_instructions ?? ''),
+    hasPlaceholders: true,
+    promptOptions,
+  });
+  log?.('llm_request', 'Sending refinement request to LLM', { system_prompt: prompt.system, user_prompt: prompt.user });
+
+  let response;
+  try {
+    response = await provider.generate(prompt.user, { systemPrompt: prompt.system, signal });
+  } catch (err) {
+    if (err instanceof ContextOverflowError) {
+      log?.('epub_refinement_error', 'Refinement context overflow; keeping the draft');
+      return null;
+    }
+    throw err;
+  }
+  if (!response?.content) return null;
+  if (response.outputTruncated) {
+    log?.('output_truncated', 'The model hit its output token limit during refinement; keeping the draft');
+    return null;
+  }
+
+  const refined = provider.extractTranslation(response.content);
+  if (!refined) {
+    log?.('epub_refinement_fallback', 'Refinement answer could not be read; keeping the draft');
+    return null;
+  }
+  if (Object.keys(chunk.localTagMap).length && !validatePlaceholders(refined, chunk.localTagMap)) {
+    log?.('epub_refinement_placeholder_corruption', 'Refinement corrupted the placeholders; keeping the draft');
+    return null;
+  }
+  return refined;
 }

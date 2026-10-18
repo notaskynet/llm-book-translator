@@ -3,7 +3,8 @@
   "drop": {
     "hint": "Déposez un fichier .txt, .srt ou .epub ici, ou cliquez pour en choisir un",
     "active": "Déposez le fichier pour le charger",
-    "unsupported": "Seuls les fichiers .txt, .srt et .epub sont pris en charge"
+    "unsupported": "Seuls les fichiers .txt, .srt et .epub sont pris en charge",
+    "hintRefine": "Déposez ici un fichier .txt, .srt ou .epub déjà traduit, ou cliquez pour en choisir un"
   },
   "source": "Langue source",
   "target": "Langue cible",
@@ -30,7 +31,8 @@
       "prepare_failed": "Le fichier n'a pas pu être lu.",
       "no_units": "Aucun texte à traduire n'a été trouvé dans le fichier.",
       "reconstruct_failed": "Le fichier de sortie n'a pas pu être construit."
-    }
+    },
+    "refining": "Peaufinage de {{name}}…"
   },
   "resume": {
     "title": "Traductions inachevées",
@@ -40,7 +42,8 @@
       "running": "Interrompue",
       "paused": "En pause",
       "partial": "Partielle"
-    }
+    },
+    "refineBadge": "Peaufinage"
   },
   "log": {
     "title": "Activité",
@@ -70,5 +73,11 @@
   "glossary_select": "Glossaire",
   "none": "Aucun",
   "text_cleanup": "Corriger les erreurs d'OCR et les sauts de ligne cassés pendant la traduction",
-  "tabs": "Sections"
+  "tabs": "Sections",
+  "task": "Tâche",
+  "task_translate": "Traduire",
+  "task_refine": "Peaufiner une traduction existante",
+  "refine_after": "Peaufiner la traduction ensuite (seconde passe)",
+  "file_language": "Langue du fichier",
+  "download_draft": "Télécharger la traduction avant peaufinage"
 }

@@ -19,6 +19,7 @@ export function ConnectionPanel() {
     try {
       const ids = await listModels(baseUrl, apiKey);
       setModels(ids);
+      set({ models: ids });
       setStatus({ kind: 'ok', count: ids.length });
     } catch (err) {
       const kind = classifyError(err);

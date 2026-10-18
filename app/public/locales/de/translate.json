@@ -3,7 +3,8 @@
   "drop": {
     "hint": "Eine .txt-, .srt- oder .epub-Datei hierher ziehen oder zum Auswählen klicken",
     "active": "Datei ablegen, um sie zu laden",
-    "unsupported": "Es werden nur .txt-, .srt- und .epub-Dateien unterstützt"
+    "unsupported": "Es werden nur .txt-, .srt- und .epub-Dateien unterstützt",
+    "hintRefine": "Eine bereits übersetzte .txt-, .srt- oder .epub-Datei hierher ziehen oder zum Auswählen klicken"
   },
   "source": "Ausgangssprache",
   "target": "Zielsprache",
@@ -30,7 +31,8 @@
       "prepare_failed": "Die Datei konnte nicht gelesen werden.",
       "no_units": "In der Datei wurde kein übersetzbarer Text gefunden.",
       "reconstruct_failed": "Die Ausgabedatei konnte nicht erstellt werden."
-    }
+    },
+    "refining": "{{name}} wird überarbeitet…"
   },
   "resume": {
     "title": "Unfertige Übersetzungen",
@@ -40,7 +42,8 @@
       "running": "Unterbrochen",
       "paused": "Pausiert",
       "partial": "Teilweise"
-    }
+    },
+    "refineBadge": "Überarbeitung"
   },
   "log": {
     "title": "Aktivität",
@@ -70,5 +73,11 @@
   "glossary_select": "Glossar",
   "none": "Keiner",
   "text_cleanup": "OCR-Fehler und kaputte Zeilenumbrüche beim Übersetzen korrigieren",
-  "tabs": "Bereiche"
+  "tabs": "Bereiche",
+  "task": "Aufgabe",
+  "task_translate": "Übersetzen",
+  "task_refine": "Eine vorhandene Übersetzung überarbeiten",
+  "refine_after": "Die Übersetzung anschließend überarbeiten (zweiter Durchgang)",
+  "file_language": "Sprache der Datei",
+  "download_draft": "Übersetzung vor der Überarbeitung herunterladen"
 }

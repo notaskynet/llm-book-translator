@@ -1,6 +1,8 @@
 // Port of src/core/adapters/srt_adapter.py.
 
 import { SRT_LINES_PER_BLOCK } from '../config';
+import { RateLimitError } from '../llm/errors';
+import { generateSubtitleRefinementBlockPrompt } from '../prompts/prompts';
 import {
   extractBlockTranslationsWithRemapping,
   groupSubtitlesForTranslation,
@@ -15,6 +17,7 @@ import {
   type CheckpointChunk,
   type FormatAdapter,
   type TranslationUnit,
+  type UnitTranslationContext,
 } from './types';
 
 export class SrtAdapter implements FormatAdapter {
@@ -94,6 +97,76 @@ export class SrtAdapter implements FormatAdapter {
       'You MUST reproduce every [N] index marker from the input exactly once, in order, ' +
       'each followed by its translation. Do NOT merge, drop or renumber markers.'
     );
+  }
+
+  /**
+   * Refines one block: its non-empty cues are renumbered 0..n-1 (empty cues are left out of the
+   * prompt), sent in one request, and retried once with the missing markers spelled out. Cues the
+   * model skipped keep their draft. Port of refine_subtitle_translations.
+   */
+  async refineUnit(unit: TranslationUnit, ctx: UnitTranslationContext): Promise<string | null> {
+    const toUnitLocal = new Map([...this.localToGlobal(unit)].map(([local, global]) => [global, local]));
+    const group = (unit.metadata.block_subtitles as number[]).filter((g) => this.subtitles[g].text.trim());
+    if (!group.length) return unit.content;
+
+    const tuples: Array<[number, string]> = group.map((g, i) => [i, this.subtitles[g].text]);
+    const localToGlobal = new Map(group.map((g, i) => [i, g]));
+    const glossaryBlock = ctx.buildGlossaryBlock?.(tuples.map(([, text]) => text).join('\n')) ?? '';
+    const instructions = String(ctx.promptOptions.refinement_instructions ?? '');
+    const refined = new Map<number, string>();
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      let extra = instructions;
+      if (attempt > 0) {
+        const missing = tuples.map(([i]) => i).filter((i) => !refined.has(localToGlobal.get(i)!));
+        extra =
+          (extra ? `${extra}\n\n` : '') +
+          'CRITICAL: Your previous response was incomplete. ' +
+          `You MUST output ALL ${tuples.length} indices [0] through [${tuples.length - 1}] in order, ` +
+          'each followed by the refined subtitle. ' +
+          `Missing indices last time: ${missing.map((i) => `[${i}]`).join(', ')}. Do NOT stop early.`;
+        ctx.log?.('srt_refinement_retry', `Retrying block ${unit.unitId}: ${missing.length} subtitles still missing`);
+      }
+
+      try {
+        const prompt = generateSubtitleRefinementBlockPrompt({
+          subtitleBlocks: tuples, previousRefinedBlock: ctx.previousTranslationContext,
+          targetLanguage: ctx.targetLanguage, additionalInstructions: extra, glossaryBlock,
+        });
+        const response = await ctx.provider.generate(prompt.user, { systemPrompt: prompt.system, signal: ctx.signal });
+        const text = response?.content ? ctx.provider.extractTranslation(response.content) : null;
+        if (text) {
+          for (const [g, value] of extractBlockTranslationsWithRemapping(text, localToGlobal)) {
+            if (!refined.has(g) && value.trim()) refined.set(g, value);
+          }
+        }
+        if (refined.size === group.length) break;
+      } catch (err) {
+        // Rate limits and cancellation stop the job; anything else costs this attempt only.
+        if (err instanceof RateLimitError || ctx.signal?.aborted || (err instanceof Error && /Abort/.test(err.name))) throw err;
+        ctx.log?.('srt_refinement_error', `Block ${unit.unitId} attempt ${attempt + 1}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
+
+    // Subtitles the model missed keep their draft; the block is complete either way.
+    return group
+      .map((g) => {
+        if (!refined.has(g)) ctx.log?.('srt_refinement_fallback', `Subtitle ${g + 1}: keeping original (block missed this index)`);
+        return `[${toUnitLocal.get(g)}]${refined.get(g) ?? this.subtitles[g].text}`;
+      })
+      .join('\n');
+  }
+
+  /** After a refined block: its last five cues, renumbered from 0, as context for the next block. */
+  nextContext(mode: 'translate' | 'refine', committed: string): string {
+    if (mode !== 'refine') return '';
+    const entries: string[] = [];
+    for (const line of committed.split('\n')) {
+      const m = /^\[(\d+)\](.*)$/.exec(line);
+      if (m) entries.push(m[2]);
+      else if (entries.length) entries[entries.length - 1] += `\n${line}`;
+    }
+    return entries.slice(-5).map((text, i) => `[${i}]${text}`).join('\n');
   }
 
   async saveUnitTranslation(unitId: string, translated: string): Promise<boolean> {

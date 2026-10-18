@@ -23,7 +23,7 @@ describe('glossary import and export', () => {
   });
 
   it('reads the alternative column names and a BOM', () => {
-    const terms = termsFromCsv('﻿source_term,translated_term,sex\nA,B,woman\n');
+    const terms = termsFromCsv('\uFEFFsource_term,translated_term,sex\nA,B,woman\n');
     expect(terms).toEqual([{ source: 'A', target: 'B', category: null, gender: 'female' }]);
   });
 

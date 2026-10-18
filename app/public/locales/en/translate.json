@@ -3,7 +3,8 @@
   "drop": {
     "hint": "Drop a .txt, .srt or .epub file here, or click to choose one",
     "active": "Drop the file to load it",
-    "unsupported": "Only .txt, .srt and .epub files are supported"
+    "unsupported": "Only .txt, .srt and .epub files are supported",
+    "hintRefine": "Drop a translated .txt, .srt or .epub file here, or click to choose one"
   },
   "source": "Source language",
   "target": "Target language",
@@ -30,7 +31,8 @@
       "prepare_failed": "The file could not be read.",
       "no_units": "No translatable text was found in the file.",
       "reconstruct_failed": "The output file could not be built."
-    }
+    },
+    "refining": "Polishing {{name}}…"
   },
   "resume": {
     "title": "Unfinished translations",
@@ -40,7 +42,8 @@
       "running": "Interrupted",
       "paused": "Paused",
       "partial": "Partial"
-    }
+    },
+    "refineBadge": "Polish"
   },
   "log": {
     "title": "Activity",
@@ -70,5 +73,11 @@
   "glossary_select": "Glossary",
   "none": "None",
   "text_cleanup": "Repair OCR errors and broken line breaks while translating",
-  "tabs": "Sections"
+  "tabs": "Sections",
+  "task": "Task",
+  "task_translate": "Translate",
+  "task_refine": "Polish an existing translation",
+  "refine_after": "Polish the translation afterwards (second pass)",
+  "file_language": "Language of the file",
+  "download_draft": "Download the translation before polishing"
 }

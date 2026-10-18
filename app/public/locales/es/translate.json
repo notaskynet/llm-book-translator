@@ -3,7 +3,8 @@
   "drop": {
     "hint": "Suelta aquí un archivo .txt, .srt o .epub, o haz clic para elegir uno",
     "active": "Suelta el archivo para cargarlo",
-    "unsupported": "Solo se admiten archivos .txt, .srt y .epub"
+    "unsupported": "Solo se admiten archivos .txt, .srt y .epub",
+    "hintRefine": "Suelta aquí un archivo .txt, .srt o .epub ya traducido, o haz clic para elegir uno"
   },
   "source": "Idioma de origen",
   "target": "Idioma de destino",
@@ -30,7 +31,8 @@
       "prepare_failed": "No se pudo leer el archivo.",
       "no_units": "No se encontró texto traducible en el archivo.",
       "reconstruct_failed": "No se pudo construir el archivo de salida."
-    }
+    },
+    "refining": "Puliendo {{name}}…"
   },
   "resume": {
     "title": "Traducciones sin terminar",
@@ -40,7 +42,8 @@
       "running": "Interrumpida",
       "paused": "En pausa",
       "partial": "Parcial"
-    }
+    },
+    "refineBadge": "Pulido"
   },
   "log": {
     "title": "Actividad",
@@ -70,5 +73,11 @@
   "glossary_select": "Glosario",
   "none": "Ninguno",
   "text_cleanup": "Corregir errores de OCR y saltos de línea rotos al traducir",
-  "tabs": "Secciones"
+  "tabs": "Secciones",
+  "task": "Tarea",
+  "task_translate": "Traducir",
+  "task_refine": "Pulir una traducción existente",
+  "refine_after": "Pulir la traducción después (segunda pasada)",
+  "file_language": "Idioma del archivo",
+  "download_draft": "Descargar la traducción antes de pulir"
 }

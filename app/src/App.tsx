@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES } from './i18n';
 import { ConnectionPanel } from './ui/ConnectionPanel';
 import { GlossariesPanel } from './ui/GlossariesPanel';
+import { SamplePanel } from './ui/SamplePanel';
 import { StylesPanel } from './ui/StylesPanel';
 import { TranslatePanel } from './ui/TranslatePanel';
 
@@ -10,6 +11,7 @@ const TABS = [
   { id: 'translate', ns: 'translate', label: 'title' },
   { id: 'styles', ns: 'style', label: 'title' },
   { id: 'glossaries', ns: 'glossary', label: 'title' },
+  { id: 'sample', ns: 'sample', label: 'title' },
 ] as const;
 
 export function App() {
@@ -49,6 +51,7 @@ export function App() {
         {tab === 'translate' && <TranslatePanel />}
         {tab === 'styles' && <StylesPanel />}
         {tab === 'glossaries' && <GlossariesPanel />}
+        {tab === 'sample' && <SamplePanel />}
       </main>
     </Suspense>
   );

@@ -41,6 +41,13 @@ export interface FormatAdapter {
    * a fallback chain) translate them here. Resolves to null when the unit failed.
    */
   translateUnit?(unit: TranslationUnit, context: UnitTranslationContext): Promise<string | null>;
+  /**
+   * Formats whose refinement is not a plain request (SRT blocks keep their `[N]` markers, EPUB
+   * chunks keep their placeholders) refine units here. Resolves to null to keep the draft.
+   */
+  refineUnit?(unit: TranslationUnit, context: UnitTranslationContext): Promise<string | null>;
+  /** Context handed to the next unit after this one was committed; replaces the engine default. */
+  nextContext?(mode: 'translate' | 'refine', committed: string): string;
   /** Parse the input and build the units. Returns false if the file is unusable. */
   prepareForTranslation(): Promise<boolean>;
   getTranslationUnits(): TranslationUnit[];

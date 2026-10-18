@@ -49,12 +49,20 @@ from src.core.glossary import (  # noqa: E402
 )
 from src.core.glossary.inflection import target_language_is_inflected  # noqa: E402
 from src.core.glossary.models import normalize_gender  # noqa: E402
+from src.core.post_processor import clean_translated_text  # noqa: E402
+from src.core.sampling import cap_chunk_text, select_sample_indices  # noqa: E402
 from src.core.srt_processor import SRTProcessor  # noqa: E402
 from src.core.style.assembler import assemble_instructions  # noqa: E402
 from src.core.style.extractor import parse_style_response  # noqa: E402
 from src.core.style.lint import lint_instruction  # noqa: E402
 from src.core.translator import _build_chunk_glossary_block  # noqa: E402
-from src.prompts.prompts import generate_ner_extraction_prompt, generate_style_extraction_prompt  # noqa: E402
+from src.prompts.prompts import (  # noqa: E402
+    generate_ner_extraction_prompt,
+    generate_post_processing_prompt,
+    generate_refinement_prompt,
+    generate_style_extraction_prompt,
+    generate_subtitle_refinement_block_prompt,
+)
 from src.utils.custom_instructions import read_preset, write_preset  # noqa: E402
 from src.utils.document_sampler import take_distributed_samples  # noqa: E402
 from src.core.translator import split_chunk_for_retry  # noqa: E402
@@ -577,6 +585,63 @@ def phase5_cases() -> dict:
     return out
 
 
+def phase6_cases() -> dict:
+    out: dict = {}
+
+    refine = []
+    for target in ("French", "Chinese", "Portuguese (Brazil)", "Klingon"):
+        for placeholders in (False, True):
+            args = dict(draft_translation="Un brouillon [id0]maladroit[id1].", previous_refined_context="Texte précédent.",
+                        target_language=target, has_placeholders=placeholders)
+            p = generate_refinement_prompt(**args)
+            refine.append({"args": args, "system": p.system, "user": p.user})
+    extra = dict(draft_translation="Brouillon.", target_language="German", has_placeholders=False,
+                 prompt_options={"text_cleanup": True}, additional_instructions="Keep it formal.",
+                 glossary_block="# GLOSSARY\n- night = Nacht")
+    p = generate_refinement_prompt(**extra)
+    refine.append({"args": extra, "system": p.system, "user": p.user})
+    out["refine_prompts"] = refine
+
+    sub = []
+    for target in ("Spanish", "Japanese"):
+        args = dict(subtitle_blocks=[(0, "Hola."), (1, "<i>¿Cómo estás?</i>")], previous_refined_block="[0]Hola.",
+                    target_language=target, additional_instructions="Be casual.", glossary_block="# GLOSSARY\n- a = b")
+        p = generate_subtitle_refinement_block_prompt(**args)
+        sub.append({"args": {**args, "subtitle_blocks": [list(b) for b in args["subtitle_blocks"]]},
+                    "system": p.system, "user": p.user})
+    out["subtitle_refine_prompts"] = sub
+
+    pp_args = dict(translated_text="[id0]Texte[id1]", target_language="French", context_before="a", context_after="b",
+                   additional_instructions="X", has_placeholders=True, glossary_block="")
+    p = generate_post_processing_prompt(**pp_args)
+    out["post_processing_prompts"] = [{"args": pp_args, "system": p.system, "user": p.user}]
+
+    clean_inputs = [
+        "", "  spaced   out  text ", "Hello , world !", "Une phrase : avec des espaces ; et plus ?", "a\n\n\n\nb",
+        "Fish &amp; chips &lt;3 &hellip; &nbsp;&nbsp;x", "&mdash; dash &ndash; and &quot;quotes&quot; &#39;x&apos;",
+    ]
+    out["clean_text"] = [{"text": t, "result": clean_translated_text(t)} for t in clean_inputs]
+
+    idx = []
+    for total, n in ((10, 3), (10, 5), (5, 5), (3, 1), (4, 10), (100, 7), (20, 2), (3, 3), (2, 1), (10, 0)):
+        try:
+            idx.append({"total": total, "n": n, "result": select_sample_indices(total, n)})
+        except ValueError as e:
+            idx.append({"total": total, "n": n, "error": str(e)})
+    out["sample_indices"] = idx
+
+    sentence = "The traveller walked slowly along the old road. "
+    caps = []
+    for text, mx in (
+        ("Short.", 100), (sentence * 5, 100), (sentence * 5, 10), ("No terminator in this very long text " * 10, 50),
+        ("He said: hello. Then left! Why? Nobody knew.", 20), ("第一句。第二句。第三句。", 6), ('He said "stop." Then left.', 14),
+    ):
+        got, capped = cap_chunk_text(text, mx)
+        caps.append({"text": text, "max": mx, "result": got, "capped": capped})
+    out["cap_chunk"] = caps
+    return out
+
+
 def main() -> None:
     dump_language_tables()
     FIXTURES_OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -590,6 +655,7 @@ def main() -> None:
         **adapter_cases(),
         **epub,
         **phase5_cases(),
+        **phase6_cases(),
     }
     FIXTURES_OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"Wrote {DATA_OUT.relative_to(ROOT)} and {FIXTURES_OUT.relative_to(ROOT)}")

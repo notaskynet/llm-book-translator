@@ -4,6 +4,7 @@
 import JSZip from 'jszip';
 import { findBody, parseXhtmlDocument, parseXml } from '../epub/dom';
 import { dirname, joinPath, unquote } from '../epub/zipUtils';
+import { roundHalfEven } from '../lib/pyRound';
 
 export const TEXT_EXTS = ['.txt', '.srt'];
 export const SUPPORTED_EXTS = [...TEXT_EXTS, '.epub'];
@@ -17,7 +18,7 @@ const extensionOf = (name: string) => {
   return dot === -1 ? '' : name.slice(dot).toLowerCase();
 };
 
-async function extractEpubText(data: ArrayBuffer | Uint8Array, hardCap: number): Promise<string | null> {
+async function extractEpubText(data: ArrayBuffer | Uint8Array, hardCap: number, paragraphs = false): Promise<string | null> {
   let zip: JSZip;
   try {
     zip = await JSZip.loadAsync(data);
@@ -54,7 +55,7 @@ async function extractEpubText(data: ArrayBuffer | Uint8Array, hardCap: number):
     const content = await zip.file(name)?.async('string');
     const doc = content ? parseXhtmlDocument(content) : null;
     const body = doc && findBody(doc);
-    const text = body?.textContent?.replace(/\s+/g, ' ').trim();
+    const text = body ? (paragraphs ? leafBlockTexts(body).join('\n\n') : body.textContent?.replace(/\s+/g, ' ').trim()) : null;
     if (!text) continue;
     parts.push(text);
     running += text.length;
@@ -63,22 +64,40 @@ async function extractEpubText(data: ArrayBuffer | Uint8Array, hardCap: number):
   return parts.length ? parts.join('\n\n').slice(0, hardCap) : null;
 }
 
+const BLOCKS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'blockquote', 'dt', 'dd', 'td', 'th', 'figcaption', 'div', 'section', 'article', 'tr', 'ul', 'ol', 'table']);
+
+/** One string per leaf block element (a block with no block inside), in document order. */
+function leafBlockTexts(body: Element): string[] {
+  const texts: string[] = [];
+  const visit = (el: Element) => {
+    const children = Array.from(el.children);
+    if (!children.some((c) => BLOCKS.has(c.localName.toLowerCase()))) {
+      const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+      if (text) texts.push(text);
+      return;
+    }
+    children.forEach(visit);
+  };
+  Array.from(body.children).forEach(visit);
+  return texts;
+}
+
+/**
+ * The text of an EPUB with one blank-line-separated paragraph per block element, in reading
+ * order. Sample & Compare chunks it like any other text file.
+ */
+export async function extractEpubParagraphs(data: ArrayBuffer | Uint8Array, hardCap = FULL_TEXT_CAP): Promise<string | null> {
+  const text = await extractEpubText(data, hardCap, true);
+  return text;
+}
+
 /** The full readable text of a file (capped), or null when unsupported or unreadable. */
 export async function extractFullText(file: File | { name: string; arrayBuffer(): Promise<ArrayBuffer> }, hardCap = FULL_TEXT_CAP): Promise<string | null> {
   const ext = extensionOf(file.name);
   if (!SUPPORTED_EXTS.includes(ext) || hardCap <= 0) return null;
   const data = await file.arrayBuffer();
   if (ext === '.epub') return extractEpubText(data, hardCap);
-  return new TextDecoder('utf-8').decode(data).replace(/^﻿/, '').slice(0, hardCap);
-}
-
-/** Python's round(): halves go to the even neighbour. */
-function roundHalfEven(x: number): number {
-  const floor = Math.floor(x);
-  const diff = x - floor;
-  if (diff < 0.5) return floor;
-  if (diff > 0.5) return floor + 1;
-  return floor % 2 === 0 ? floor : floor + 1;
+  return new TextDecoder('utf-8').decode(data).replace(/^\uFEFF/, '').slice(0, hardCap);
 }
 
 const rfind = (text: string, sub: string, lo: number, hi: number) => {

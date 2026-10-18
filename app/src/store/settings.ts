@@ -16,6 +16,8 @@ interface SettingsState {
   /** Comma- or newline-separated keys; rotated on HTTP 429. */
   apiKey: string;
   rememberKey: boolean;
+  /** Models listed by the last successful connection test; not persisted. */
+  models: string[];
   set: (patch: Partial<Omit<SettingsState, 'set'>>) => void;
 }
 
@@ -44,6 +46,7 @@ export const useSettings = create<SettingsState>()(
       model: '',
       apiKey: '',
       rememberKey: false,
+      models: [],
       set: (patch) => set(patch),
     }),
     {

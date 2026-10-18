@@ -37,3 +37,10 @@ export function outputFileName(fileName: string, targetLanguage: string): string
 export function mimeTypeFor(fileName: string): string {
   return fileExtension(fileName) === '.epub' ? 'application/epub+zip' : 'text/plain;charset=utf-8';
 }
+
+/** `book (French).txt` -> `book (French) (refined).txt` */
+export function refinedFileName(fileName: string): string {
+  const ext = fileExtension(fileName);
+  const base = ext ? fileName.slice(0, -ext.length) : fileName;
+  return `${base} (refined)${ext}`;
+}

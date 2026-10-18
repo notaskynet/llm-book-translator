@@ -71,10 +71,20 @@ export function TranslatePanel() {
 
       {!ready && <p className="text-sm text-amber-700">{t('needConnection')}</p>}
 
+      <fieldset className="flex flex-wrap gap-4 text-sm" disabled={running}>
+        <legend className="sr-only">{t('task')}</legend>
+        {(['translate', 'refine'] as const).map((value) => (
+          <label key={value} className="flex items-center gap-2">
+            <input type="radio" name="task" checked={options.task === value} onChange={() => options.set({ task: value })} />
+            {t(value === 'translate' ? 'task_translate' : 'task_refine')}
+          </label>
+        ))}
+      </fieldset>
+
       <div className="grid grid-cols-2 gap-3">
-        {(['sourceLanguage', 'targetLanguage'] as const).map((field) => (
+        {(options.task === 'refine' ? (['targetLanguage'] as const) : (['sourceLanguage', 'targetLanguage'] as const)).map((field) => (
           <label key={field} className="block text-sm">
-            {t(field === 'sourceLanguage' ? 'source' : 'target')}
+            {t(field === 'sourceLanguage' ? 'source' : options.task === 'refine' ? 'file_language' : 'target')}
             <input
               list="language-list"
               disabled={running}
@@ -124,10 +134,18 @@ export function TranslatePanel() {
             <input type="checkbox" disabled={running} checked={options.textCleanup} onChange={(e) => options.set({ textCleanup: e.target.checked })} />
             {t('text_cleanup')}
           </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled={running} checked={options.bilingual} onChange={(e) => options.set({ bilingual: e.target.checked })} />
-            {t('bilingual')}
-          </label>
+          {options.task === 'translate' && (
+            <>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" disabled={running} checked={options.bilingual} onChange={(e) => options.set({ bilingual: e.target.checked })} />
+                {t('bilingual')}
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" disabled={running} checked={options.refineAfter} onChange={(e) => options.set({ refineAfter: e.target.checked })} />
+                {t('refine_after')}
+              </label>
+            </>
+          )}
           <label className="block">
             {t('maxTokens')}
             <input type="number" min={50} max={4000} disabled={running} className="mt-1 block w-32 rounded border px-2 py-1"
@@ -149,14 +167,14 @@ export function TranslatePanel() {
           className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm ${isDragActive ? 'border-black' : 'border-gray-300'} ${ready ? '' : 'opacity-50'}`}
         >
           <input {...getInputProps({ accept: SUPPORTED_EXTENSIONS.join(',') })} />
-          {isDragActive ? t('drop.active') : t('drop.hint')}
+          {isDragActive ? t('drop.active') : t(options.task === 'refine' ? 'drop.hintRefine' : 'drop.hint')}
         </div>
       )}
       {error && <p role="alert" className="text-sm text-red-700">{t(error)}</p>}
 
       {(running || job.phase === 'finished') && (
         <div className="space-y-2" aria-live="polite">
-          {running && <p className="text-sm">{t('status.running', { name: job.fileName })}</p>}
+          {running && <p className="text-sm">{t(job.task === 'refine' ? 'status.refining' : 'status.running', { name: job.fileName })}</p>}
           {stats && (
             <>
               <div className="h-2 w-full overflow-hidden rounded bg-gray-200" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
@@ -198,6 +216,9 @@ export function TranslatePanel() {
                   {t('download')}
                 </button>
               )}
+              {job.draft && job.output !== job.draft && (
+                <button className="rounded border px-3 py-1 text-sm" onClick={() => saveAs(job.draft!.blob, job.draft!.fileName)}>{t('download_draft')}</button>
+              )}
               <button className="rounded border px-3 py-1 text-sm" onClick={resetJob}>{t('another')}</button>
             </div>
           )}
@@ -225,7 +246,7 @@ export function TranslatePanel() {
             {job.resumable.map((r) => (
               <li key={r.id} className="flex items-center justify-between gap-2 text-sm">
                 <span className="truncate">
-                  {r.fileName} <span className="text-gray-500">({t(`resume.state.${r.status}`)})</span>
+                  {r.fileName} <span className="text-gray-500">({t(`resume.state.${r.status}`)}{r.config.mode === 'refine' ? `, ${t('resume.refineBadge')}` : ''})</span>
                 </span>
                 <span className="flex shrink-0 gap-2">
                   <button className="rounded bg-black px-2 py-1 text-white disabled:opacity-50" disabled={!ready} onClick={() => void resumeJob(r.id)}>

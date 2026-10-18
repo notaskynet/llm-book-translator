@@ -10,7 +10,9 @@ import { RateLimitError } from '../llm/errors';
 import type { LLMProvider, LogCallback } from '../llm/types';
 import type { PromptOptions } from '../prompts/prompts';
 import { buildChunkGlossaryBlock, type GlossaryOptions, type GlossaryRuntimeState } from '../glossary/chunkBlock';
+import { cleanTranslatedText } from '../text/postProcess';
 import { iterOrderedConcurrent } from './parallel';
+import { refineChunk } from './refine';
 import { translateChunk } from './request';
 
 export interface TranslationStats {
@@ -29,6 +31,8 @@ export interface TranslationCallbacks {
   shouldInterrupt?: () => boolean;
 }
 
+export type JobMode = 'translate' | 'refine';
+
 export interface TranslateJobArgs {
   adapter: FormatAdapter;
   store: CheckpointStore;
@@ -46,6 +50,11 @@ export interface TranslateJobArgs {
   glossary?: GlossaryOptions;
   bilingual?: boolean;
   parallelWorkers?: number;
+  /**
+   * 'refine' polishes a file that is already in the target language: units are refined instead of
+   * translated, a unit that cannot be refined keeps its draft, and nothing is retried on validation.
+   */
+  mode?: JobMode;
   callbacks?: TranslationCallbacks;
 }
 
@@ -61,11 +70,20 @@ class ValidationFailed {
   constructor(readonly content: string) {}
 }
 
+/** The tail of what was just committed, handed to the next unit for continuity. */
+function nextContext(mode: JobMode, committed: string, keptDraft: boolean): string {
+  if (mode === 'translate') return committed.length > 200 ? committed.slice(-200) : committed;
+  if (keptDraft) return '';
+  const words = committed.split(/\s+/).filter(Boolean);
+  return words.length > 25 ? words.slice(-25).join(' ') : committed;
+}
+
 export async function translateJob(args: TranslateJobArgs): Promise<TranslationOutcome> {
   const {
     adapter, store, translationId, provider, sourceLanguage, targetLanguage,
-    promptOptions = {}, glossary, bilingual = false, parallelWorkers = 1, callbacks = {},
+    promptOptions = {}, glossary, bilingual = false, parallelWorkers = 1, mode = 'translate', callbacks = {},
   } = args;
+  const refining = mode === 'refine';
   const { onLog: log, onStats, shouldInterrupt } = callbacks;
 
   const stats: TranslationStats = { totalChunks: 0, completedChunks: 0, failedChunks: 0, unfinishedChunks: 0, runProcessedChunks: 0 };
@@ -129,8 +147,38 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
     const sequential = workers === 1;
     const maxValidationAttempts = 1 + Math.max(0, UNIT_VALIDATION_RETRIES);
     let lastContext = '';
+    // Units whose refinement fell back to the draft; the next unit gets no "previous" context then.
+    const keptDraft = new Set<number>();
+
+    const refineUnit = async (i: number, signal: AbortSignal): Promise<string> => {
+      const unit = units[i];
+      log?.('unit_start', `Refining unit ${i + 1}/${total} (${unit.unitId})`);
+      const context = {
+        provider, sourceLanguage, targetLanguage, promptOptions,
+        previousTranslationContext: sequential ? lastContext : '', buildGlossaryBlock, log, signal,
+      };
+      let refined: string | null;
+      if (adapter.refineUnit) {
+        refined = await adapter.refineUnit(unit, context);
+      } else if (unit.content.trim().length <= 1) {
+        refined = unit.content; // nothing worth sending
+      } else {
+        const text = await refineChunk({
+          draft: unit.content, contextBefore: unit.contextBefore, contextAfter: unit.contextAfter,
+          previousRefinedContext: context.previousTranslationContext, targetLanguage, provider, promptOptions, buildGlossaryBlock, log, signal,
+        });
+        refined = text === null ? null : cleanTranslatedText(text);
+      }
+      if (refined === null) {
+        log?.('refinement_chunk_failed', `Refinement failed for unit ${i + 1}, keeping the original`);
+        keptDraft.add(i);
+        return unit.content;
+      }
+      return refined;
+    };
 
     const translateUnit = async (i: number, signal: AbortSignal): Promise<string | null | ValidationFailed> => {
+      if (refining) return refineUnit(i, signal);
       const unit = units[i];
       log?.('unit_start', `Translating unit ${i + 1}/${total} (${unit.unitId})`);
 
@@ -242,7 +290,9 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
             stats.completedChunks += 1;
             await saveCheckpoint(i, unit, value);
             emitStats(restored);
-            if (sequential) lastContext = value.length > 200 ? value.slice(-200) : value;
+            if (sequential) {
+              lastContext = adapter.nextContext?.(mode, value) ?? nextContext(mode, value, keptDraft.has(i));
+            }
             log?.('unit_complete', `Unit ${i + 1}/${total} translated successfully`);
           }
         } else {

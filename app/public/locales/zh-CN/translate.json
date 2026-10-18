@@ -3,7 +3,8 @@
   "drop": {
     "hint": "将 .txt、.srt 或 .epub 文件拖到此处，或点击选择",
     "active": "松开以加载文件",
-    "unsupported": "仅支持 .txt、.srt 和 .epub 文件"
+    "unsupported": "仅支持 .txt、.srt 和 .epub 文件",
+    "hintRefine": "将已翻译的 .txt、.srt 或 .epub 文件拖到此处，或点击选择"
   },
   "source": "源语言",
   "target": "目标语言",
@@ -30,7 +31,8 @@
       "prepare_failed": "无法读取该文件。",
       "no_units": "文件中未找到可翻译的文本。",
       "reconstruct_failed": "无法生成输出文件。"
-    }
+    },
+    "refining": "正在润色 {{name}}…"
   },
   "resume": {
     "title": "未完成的翻译",
@@ -40,7 +42,8 @@
       "running": "已中断",
       "paused": "已暂停",
       "partial": "部分完成"
-    }
+    },
+    "refineBadge": "润色"
   },
   "log": {
     "title": "活动",
@@ -70,5 +73,11 @@
   "glossary_select": "术语表",
   "none": "无",
   "text_cleanup": "翻译时修复 OCR 错误和断裂的换行",
-  "tabs": "分区"
+  "tabs": "分区",
+  "task": "任务",
+  "task_translate": "翻译",
+  "task_refine": "润色已有译文",
+  "refine_after": "翻译后再润色（第二遍）",
+  "file_language": "文件语言",
+  "download_draft": "下载润色前的译文"
 }

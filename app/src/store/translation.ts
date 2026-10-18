@@ -14,6 +14,10 @@ export interface TranslationOptions {
   glossaryId: number | null;
   /** Ask the model to repair OCR errors and broken line breaks while translating. */
   textCleanup: boolean;
+  /** 'refine' polishes a file that is already translated instead of translating it. */
+  task: 'translate' | 'refine';
+  /** After translating, run a polish pass on the result. */
+  refineAfter: boolean;
 }
 
 interface OptionsState extends TranslationOptions {
@@ -22,9 +26,9 @@ interface OptionsState extends TranslationOptions {
 
 /** The option values only, without the store's actions (which cannot be persisted or cloned). */
 export function currentOptions(): TranslationOptions {
-  const { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers, presetId, glossaryId, textCleanup } =
+  const { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers, presetId, glossaryId, textCleanup, task, refineAfter } =
     useTranslationOptions.getState();
-  return { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers, presetId, glossaryId, textCleanup };
+  return { sourceLanguage, targetLanguage, bilingual, maxTokensPerChunk, parallelWorkers, presetId, glossaryId, textCleanup, task, refineAfter };
 }
 
 export const useTranslationOptions = create<OptionsState>()(
@@ -38,6 +42,8 @@ export const useTranslationOptions = create<OptionsState>()(
       presetId: null,
       glossaryId: null,
       textCleanup: false,
+      task: 'translate',
+      refineAfter: false,
       set: (patch) => set(patch),
     }),
     {
