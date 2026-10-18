@@ -1,9 +1,9 @@
 {
   "title": "Übersetzen",
   "drop": {
-    "hint": "Eine .txt- oder .srt-Datei hierher ziehen oder zum Auswählen klicken",
+    "hint": "Eine .txt-, .srt- oder .epub-Datei hierher ziehen oder zum Auswählen klicken",
     "active": "Datei ablegen, um sie zu laden",
-    "unsupported": "Derzeit werden nur .txt- und .srt-Dateien unterstützt"
+    "unsupported": "Es werden nur .txt-, .srt- und .epub-Dateien unterstützt"
   },
   "source": "Ausgangssprache",
   "target": "Zielsprache",
@@ -59,6 +59,11 @@
     "llm_request_failed": "Eine Anfrage ist fehlgeschlagen",
     "translation_interrupted": "Von dir gestoppt",
     "rate_limited": "Pausiert wegen des Ratenlimits des Anbieters",
-    "using_raw_response_fallback": "Das Modell hat das Ausgabeformat ignoriert; seine Rohantwort wird verwendet"
+    "using_raw_response_fallback": "Das Modell hat das Ausgabeformat ignoriert; seine Rohantwort wird verwendet",
+    "phase2_warning": "Das Modell konnte die Formatierungs-Tags nicht beibehalten; sie werden automatisch neu platziert (die Position kann leicht abweichen)",
+    "fallback_untranslated": "Eine Passage konnte nicht übersetzt werden und bleibt in der Ausgangssprache",
+    "replace_body_error": "Ein Kapitel konnte nicht neu aufgebaut werden und blieb wie im Original",
+    "epub_file_not_found": "Ein im Buch aufgeführtes Kapitel wurde nicht gefunden und übersprungen",
+    "epub_xml_error": "Ein Kapitel konnte nicht gelesen werden und blieb unübersetzt"
   }
 }

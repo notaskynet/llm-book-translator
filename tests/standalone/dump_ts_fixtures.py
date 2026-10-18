@@ -21,6 +21,25 @@ import src.config as cfg  # noqa: E402
 from src.core.adapters.srt_adapter import SrtAdapter  # noqa: E402
 from src.core.adapters.txt_adapter import TxtAdapter  # noqa: E402
 from src.core.chunking.token_chunker import TokenChunker  # noqa: E402
+from src.core.epub.body_serializer import normalize_whitespace  # noqa: E402
+from src.core.epub.html_chunker import HtmlChunker  # noqa: E402
+from src.core.epub.html_utils import (  # noqa: E402
+    extract_text_and_positions,
+    is_text_free_chunk,
+    reinsert_placeholders,
+)
+from src.core.epub.lang_support import (  # noqa: E402
+    LANGUAGE_NAME_TO_CODE,
+    _REGIONAL_NAME_TO_CODE,
+    get_language_code,
+)
+from src.core.epub.tag_preservation import TagPreserver, is_non_translatable  # noqa: E402
+from src.core.epub.token_alignment_fallback import TokenAlignmentFallback  # noqa: E402
+from src.core.epub.xhtml_translator import (  # noqa: E402
+    PlaceholderManager,
+    _escape_stray_angle_brackets,
+    validate_placeholders,
+)
 from src.core.srt_processor import SRTProcessor  # noqa: E402
 from src.core.translator import split_chunk_for_retry  # noqa: E402
 from src.prompts.examples.placeholder_examples import TRANSLATIONS  # noqa: E402
@@ -286,14 +305,129 @@ def adapter_cases() -> dict:
     return {"txt": txt_cases, "srt": srt_cases, "srt_remap": remap}
 
 
+EPUB_DATA_OUT = APP / "src" / "epub" / "data" / "language-codes.json"
+
+
+def epub_cases() -> dict:
+    sentence = "The traveller walked slowly along the old road. "
+    long_para = "<p>" + sentence * 30 + "</p>"
+    bodies = {
+        "simple": "<p>Hello <b>brave</b> world.</p>\n<p>Second paragraph.</p>",
+        "nested": '<div class="chapter"><h1 id="c1">Chapter One</h1>\n<p class="x">It was <i>a dark</i> and '
+                  '<span style="color:red">stormy</span> night.</p>\n<p>The rain fell.<br/>Again.</p></div>',
+        "numbers-and-empties": "<p> </p>\n<p>1.</p>\n<h2>III</h2>\n<p>Real text here.</p>\n<p>42</p>",
+        "image": '<p><img src="a.png" alt="x"/></p>\n<p>Caption text.</p>',
+        "entities": "<p>Fish &amp; chips &lt;3 &#233;t&#233;.</p>",
+        "oversized": "<div>" + long_para + "\n" + long_para + "\n<p>Short tail.</p></div>",
+        "list-and-table": "<ul><li>One apple</li><li>Two pears</li></ul>\n"
+                          "<table><tr><td>Cell A</td><td>Cell B</td></tr></table>",
+        "cjk": "<p>他慢慢地走在古老的路上。天色已晚，雨下得很大。</p>\n<p>第二段。</p>",
+    }
+    cases = []
+    for name, body in bodies.items():
+        preserver = TagPreserver()
+        text, tag_map = preserver.preserve_tags(body)
+        restored = preserver.restore_tags(text, tag_map)
+        case = {"name": name, "body": body, "text": text, "tag_map": tag_map, "restored": restored, "chunks": {}}
+        for max_tokens in (60, 450):
+            chunks = HtmlChunker(max_tokens=max_tokens).chunk_html_with_placeholders(text, tag_map)
+            case["chunks"][str(max_tokens)] = chunks
+        cases.append(case)
+
+    non_translatable = [
+        "", "   ", "1", "1.", "1.2", "III", "IV.", "(1)", "1-", "Hello", "12 apples", "—", "\u00a0", "MIX", "civil",
+    ]
+    ws_inputs = [
+        "<p>Line one\n   continues here.</p><p>Next</p>",
+        "<p>A</p>\n\n\n<p>B</p>",
+        "<pre>keep\n   this</pre><p>wrap\n   me</p>",
+        "<p>One<br/>Two<br>Three</p>",
+        "<div>text   with    spaces</div>",
+    ]
+    escape_inputs = [
+        "plain text", "Fish & chips", "AT&T", "&amp; already", "caf&eacute; &nbsp; au lait", "a < b > c",
+        "&#233; &#xE9; &#99999999;", "&unknown; &", "<Skill> activated", "[id0]Text &hellip;[id1]",
+    ]
+    text_free = ["[id0]", "[id0]==[id1]", "[id0]……[id1]", "[id0]第1章[id1]", "[id0]2024[id1]", "[id0]Hello[id1]", ""]
+
+    placeholders_cases = []
+    for chunk_text, tag_map in (
+        ("[id0]Bonjour[id1] monde[id2]", {"[id0]": "<p>", "[id1]": "<b>", "[id2]": "</b></p>"}),
+        ("[id0]Bonjour monde[id2]", {"[id0]": "<p>", "[id1]": "<b>", "[id2]": "</p>"}),
+        ("[id1]Bonjour[id0] monde[id2]", {"[id0]": "<p>", "[id1]": "<b>", "[id2]": "</p>"}),
+        ("[id0]Bonjour[id0] monde[id1]", {"[id0]": "<p>", "[id1]": "</p>"}),
+        ("Bonjour", {}),
+        ("[id0]a[id1]b[id2]c[id3]", {"[id0]": "", "[id1]": "", "[id2]": ""}),
+    ):
+        placeholders_cases.append({"text": chunk_text, "tag_map": tag_map, "valid": validate_placeholders(chunk_text, tag_map)})
+
+    restore_cases = [
+        {"text": "[id0]Bonjour[id1] monde[id2]", "global_indices": [5, 6, 7],
+         "result": PlaceholderManager.restore_to_global("[id0]Bonjour[id1] monde[id2]", [5, 6, 7])},
+        {"text": "[id0]a[id1]b[id10]", "global_indices": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+         "result": PlaceholderManager.restore_to_global("[id0]a[id1]b[id10]", [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])},
+        {"text": "no placeholders", "global_indices": [], "result": "no placeholders"},
+    ]
+
+    aligner = TokenAlignmentFallback()
+    align_cases = []
+    for original, translated in (
+        ("[id0]Hello[id1] world[id2]", "Bonjour monde"),
+        ("[id0]The [id1]quick[id2] brown fox[id3]", "Le renard brun rapide"),
+        ("[id0]Only text[id1]", "Seulement du texte"),
+        ("[id0][id1]Text[id2]", "Texte"),
+        ("[id0]他慢慢地走[id1]在路上[id2]", "He walked slowly on the road"),
+        ("[id0]x[id1]", ""),
+    ):
+        phs = [f"[id{m.group(1)}]" for m in __import__("re").finditer(r"\[id(\d+)\]", original)]
+        align_cases.append({
+            "original": original, "translated": translated, "placeholders": phs,
+            "result": aligner.align_and_insert_placeholders(original, translated, phs),
+        })
+
+    reinsert_cases = []
+    for original, translated in (
+        ("[id0]Hello [id1]world[id2]", "Bonjour monde"),
+        ("[id0]a[id1]b[id2]c[id3]", "alpha beta gamma"),
+    ):
+        _, positions = extract_text_and_positions(original)
+        reinsert_cases.append({
+            "original": original, "translated": translated,
+            "positions": {str(k): v for k, v in positions.items()},
+            "result": reinsert_placeholders(translated, positions),
+        })
+
+    lang_inputs = [
+        "English", "french", "  German ", "Portuguese (Brazil)", "Portuguese (Portugal)", "Portuguese", "en-US",
+        "fr", "zh-CN", "Arabic", "Hebrew", "Persian", "Klingon", "", "Chinese", "Filipino", "Norwegian",
+    ]
+    return {
+        "epub_bodies": cases,
+        "epub_non_translatable": [{"text": t, "result": is_non_translatable(t)} for t in non_translatable],
+        "epub_whitespace": [{"html": h, "result": normalize_whitespace(h)} for h in ws_inputs],
+        "epub_escape": [{"text": t, "result": _escape_stray_angle_brackets(t)} for t in escape_inputs],
+        "epub_text_free": [{"text": t, "result": is_text_free_chunk(t)} for t in text_free],
+        "epub_validate": placeholders_cases,
+        "epub_restore": restore_cases,
+        "epub_align": align_cases,
+        "epub_reinsert": reinsert_cases,
+        "epub_lang": [{"input": i, "result": get_language_code(i)} for i in lang_inputs],
+        "_language_codes": {"names": LANGUAGE_NAME_TO_CODE, "regional": _REGIONAL_NAME_TO_CODE},
+    }
+
+
 def main() -> None:
     dump_language_tables()
     FIXTURES_OUT.parent.mkdir(parents=True, exist_ok=True)
+    epub = epub_cases()
+    EPUB_DATA_OUT.parent.mkdir(parents=True, exist_ok=True)
+    EPUB_DATA_OUT.write_text(json.dumps(epub.pop("_language_codes"), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     payload = {
         "prompts": prompt_cases(),
         "chunker": chunker_cases(),
         "split": split_cases(),
         **adapter_cases(),
+        **epub,
     }
     FIXTURES_OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"Wrote {DATA_OUT.relative_to(ROOT)} and {FIXTURES_OUT.relative_to(ROOT)}")

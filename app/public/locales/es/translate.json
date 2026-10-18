@@ -1,9 +1,9 @@
 {
   "title": "Traducir",
   "drop": {
-    "hint": "Suelta aquí un archivo .txt o .srt, o haz clic para elegir uno",
+    "hint": "Suelta aquí un archivo .txt, .srt o .epub, o haz clic para elegir uno",
     "active": "Suelta el archivo para cargarlo",
-    "unsupported": "Por ahora solo se admiten archivos .txt y .srt"
+    "unsupported": "Solo se admiten archivos .txt, .srt y .epub"
   },
   "source": "Idioma de origen",
   "target": "Idioma de destino",
@@ -59,6 +59,11 @@
     "llm_request_failed": "Una solicitud falló",
     "translation_interrupted": "Detenido por ti",
     "rate_limited": "En pausa por el límite de solicitudes del proveedor",
-    "using_raw_response_fallback": "El modelo ignoró el formato de salida; se usa su respuesta sin procesar"
+    "using_raw_response_fallback": "El modelo ignoró el formato de salida; se usa su respuesta sin procesar",
+    "phase2_warning": "El modelo no pudo conservar las etiquetas de formato; se reposicionan automáticamente (la colocación puede ser ligeramente imprecisa)",
+    "fallback_untranslated": "Un pasaje no se pudo traducir y permanece en el idioma de origen",
+    "replace_body_error": "Un capítulo no se pudo reconstruir y se dejó como en el original",
+    "epub_file_not_found": "Un capítulo listado en el libro no se encontró y se omitió",
+    "epub_xml_error": "Un capítulo no se pudo leer y se dejó sin traducir"
   }
 }

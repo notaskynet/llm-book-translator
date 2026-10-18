@@ -2020,5 +2020,867 @@
     "9": "Known"
    }
   }
+ ],
+ "epub_bodies": [
+  {
+   "name": "simple",
+   "body": "<p>Hello <b>brave</b> world.</p>\n<p>Second paragraph.</p>",
+   "text": "[id0]Hello [id1]brave[id2] world.[id3]Second paragraph.[id4]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "<b>",
+    "[id2]": "</b>",
+    "[id3]": "</p>\n<p>",
+    "[id4]": "</p>"
+   },
+   "restored": "<p>Hello <b>brave</b> world.</p>\n<p>Second paragraph.</p>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]Hello [id1]brave[id2] world.[id3]Second paragraph.[id4]",
+      "local_tag_map": {
+       "[id0]": "<p>",
+       "[id1]": "<b>",
+       "[id2]": "</b>",
+       "[id3]": "</p>\n<p>",
+       "[id4]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]Hello [id1]brave[id2] world.[id3]Second paragraph.[id4]",
+      "local_tag_map": {
+       "[id0]": "<p>",
+       "[id1]": "<b>",
+       "[id2]": "</b>",
+       "[id3]": "</p>\n<p>",
+       "[id4]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "nested",
+   "body": "<div class=\"chapter\"><h1 id=\"c1\">Chapter One</h1>\n<p class=\"x\">It was <i>a dark</i> and <span style=\"color:red\">stormy</span> night.</p>\n<p>The rain fell.<br/>Again.</p></div>",
+   "text": "[id0]Chapter One[id1]It was [id2]a dark[id3] and [id4]stormy[id5] night.[id6]The rain fell.[id7]Again.[id8]",
+   "tag_map": {
+    "[id0]": "<div class=\"chapter\"><h1 id=\"c1\">",
+    "[id1]": "</h1>\n<p class=\"x\">",
+    "[id2]": "<i>",
+    "[id3]": "</i>",
+    "[id4]": "<span style=\"color:red\">",
+    "[id5]": "</span>",
+    "[id6]": "</p>\n<p>",
+    "[id7]": "<br/>",
+    "[id8]": "</p></div>"
+   },
+   "restored": "<div class=\"chapter\"><h1 id=\"c1\">Chapter One</h1>\n<p class=\"x\">It was <i>a dark</i> and <span style=\"color:red\">stormy</span> night.</p>\n<p>The rain fell.<br/>Again.</p></div>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]Chapter One[id1]It was [id2]a dark[id3] and [id4]stormy[id5] night.[id6]The rain fell.[id7]Again.[id8]",
+      "local_tag_map": {
+       "[id0]": "<div class=\"chapter\"><h1 id=\"c1\">",
+       "[id1]": "</h1>\n<p class=\"x\">",
+       "[id2]": "<i>",
+       "[id3]": "</i>",
+       "[id4]": "<span style=\"color:red\">",
+       "[id5]": "</span>",
+       "[id6]": "</p>\n<p>",
+       "[id7]": "<br/>",
+       "[id8]": "</p></div>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]Chapter One[id1]It was [id2]a dark[id3] and [id4]stormy[id5] night.[id6]The rain fell.[id7]Again.[id8]",
+      "local_tag_map": {
+       "[id0]": "<div class=\"chapter\"><h1 id=\"c1\">",
+       "[id1]": "</h1>\n<p class=\"x\">",
+       "[id2]": "<i>",
+       "[id3]": "</i>",
+       "[id4]": "<span style=\"color:red\">",
+       "[id5]": "</span>",
+       "[id6]": "</p>\n<p>",
+       "[id7]": "<br/>",
+       "[id8]": "</p></div>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "numbers-and-empties",
+   "body": "<p> </p>\n<p>1.</p>\n<h2>III</h2>\n<p>Real text here.</p>\n<p>42</p>",
+   "text": "[id0]Real text here.[id1]",
+   "tag_map": {
+    "[id0]": "<p> </p>\n<p>1.</p>\n<h2>III</h2>\n<p>",
+    "[id1]": "</p>\n<p>42</p>"
+   },
+   "restored": "<p> </p>\n<p>1.</p>\n<h2>III</h2>\n<p>Real text here.</p>\n<p>42</p>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]Real text here.[id1]",
+      "local_tag_map": {
+       "[id0]": "<p> </p>\n<p>1.</p>\n<h2>III</h2>\n<p>",
+       "[id1]": "</p>\n<p>42</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]Real text here.[id1]",
+      "local_tag_map": {
+       "[id0]": "<p> </p>\n<p>1.</p>\n<h2>III</h2>\n<p>",
+       "[id1]": "</p>\n<p>42</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "image",
+   "body": "<p><img src=\"a.png\" alt=\"x\"/></p>\n<p>Caption text.</p>",
+   "text": "[id0]Caption text.[id1]",
+   "tag_map": {
+    "[id0]": "<p><img src=\"a.png\" alt=\"x\"/></p>\n<p>",
+    "[id1]": "</p>"
+   },
+   "restored": "<p><img src=\"a.png\" alt=\"x\"/></p>\n<p>Caption text.</p>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]Caption text.[id1]",
+      "local_tag_map": {
+       "[id0]": "<p><img src=\"a.png\" alt=\"x\"/></p>\n<p>",
+       "[id1]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]Caption text.[id1]",
+      "local_tag_map": {
+       "[id0]": "<p><img src=\"a.png\" alt=\"x\"/></p>\n<p>",
+       "[id1]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "entities",
+   "body": "<p>Fish &amp; chips &lt;3 &#233;t&#233;.</p>",
+   "text": "[id0]Fish &amp; chips &lt;3 &#233;t&#233;.[id1]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "</p>"
+   },
+   "restored": "<p>Fish &amp; chips &lt;3 &#233;t&#233;.</p>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]Fish &amp; chips &lt;3 &#233;t&#233;.[id1]",
+      "local_tag_map": {
+       "[id0]": "<p>",
+       "[id1]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]Fish &amp; chips &lt;3 &#233;t&#233;.[id1]",
+      "local_tag_map": {
+       "[id0]": "<p>",
+       "[id1]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "oversized",
+   "body": "<div><p>The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. </p>\n<p>The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. </p>\n<p>Short tail.</p></div>",
+   "text": "[id0]The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. [id1]The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. [id2]Short tail.[id3]",
+   "tag_map": {
+    "[id0]": "<div><p>",
+    "[id1]": "</p>\n<p>",
+    "[id2]": "</p>\n<p>",
+    "[id3]": "</p></div>"
+   },
+   "restored": "<div><p>The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. </p>\n<p>The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. </p>\n<p>Short tail.</p></div>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {
+       "[id0]": "<div><p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0
+      ]
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 1,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 1,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 1,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.[id0]",
+      "local_tag_map": {
+       "[id0]": "</p>\n<p>"
+      },
+      "global_offset": 1,
+      "global_indices": [
+       1
+      ]
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 2,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 2,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 2,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.The traveller walked slowly along the old road.",
+      "local_tag_map": {},
+      "global_offset": 2,
+      "global_indices": []
+     },
+     {
+      "text": "The traveller walked slowly along the old road.The traveller walked slowly along the old road.[id0]Short tail.[id1]",
+      "local_tag_map": {
+       "[id0]": "</p>\n<p>",
+       "[id1]": "</p></div>"
+      },
+      "global_offset": 2,
+      "global_indices": [
+       2,
+       3
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. [id1]",
+      "local_tag_map": {
+       "[id0]": "<div><p>",
+       "[id1]": "</p>\n<p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1
+      ]
+     },
+     {
+      "text": "The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. The traveller walked slowly along the old road. [id0]Short tail.[id1]",
+      "local_tag_map": {
+       "[id0]": "</p>\n<p>",
+       "[id1]": "</p></div>"
+      },
+      "global_offset": 2,
+      "global_indices": [
+       2,
+       3
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "list-and-table",
+   "body": "<ul><li>One apple</li><li>Two pears</li></ul>\n<table><tr><td>Cell A</td><td>Cell B</td></tr></table>",
+   "text": "[id0]One apple[id1]Two pears[id2]Cell A[id3]Cell B[id4]",
+   "tag_map": {
+    "[id0]": "<ul><li>",
+    "[id1]": "</li><li>",
+    "[id2]": "</li></ul>\n<table><tr><td>",
+    "[id3]": "</td><td>",
+    "[id4]": "</td></tr></table>"
+   },
+   "restored": "<ul><li>One apple</li><li>Two pears</li></ul>\n<table><tr><td>Cell A</td><td>Cell B</td></tr></table>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]One apple[id1]Two pears[id2]Cell A[id3]Cell B[id4]",
+      "local_tag_map": {
+       "[id0]": "<ul><li>",
+       "[id1]": "</li><li>",
+       "[id2]": "</li></ul>\n<table><tr><td>",
+       "[id3]": "</td><td>",
+       "[id4]": "</td></tr></table>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]One apple[id1]Two pears[id2]Cell A[id3]Cell B[id4]",
+      "local_tag_map": {
+       "[id0]": "<ul><li>",
+       "[id1]": "</li><li>",
+       "[id2]": "</li></ul>\n<table><tr><td>",
+       "[id3]": "</td><td>",
+       "[id4]": "</td></tr></table>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2,
+       3,
+       4
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "name": "cjk",
+   "body": "<p>他慢慢地走在古老的路上。天色已晚，雨下得很大。</p>\n<p>第二段。</p>",
+   "text": "[id0]他慢慢地走在古老的路上。天色已晚，雨下得很大。[id1]第二段。[id2]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "</p>\n<p>",
+    "[id2]": "</p>"
+   },
+   "restored": "<p>他慢慢地走在古老的路上。天色已晚，雨下得很大。</p>\n<p>第二段。</p>",
+   "chunks": {
+    "60": [
+     {
+      "text": "[id0]他慢慢地走在古老的路上。天色已晚，雨下得很大。[id1]第二段。[id2]",
+      "local_tag_map": {
+       "[id0]": "<p>",
+       "[id1]": "</p>\n<p>",
+       "[id2]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2
+      ]
+     }
+    ],
+    "450": [
+     {
+      "text": "[id0]他慢慢地走在古老的路上。天色已晚，雨下得很大。[id1]第二段。[id2]",
+      "local_tag_map": {
+       "[id0]": "<p>",
+       "[id1]": "</p>\n<p>",
+       "[id2]": "</p>"
+      },
+      "global_offset": 0,
+      "global_indices": [
+       0,
+       1,
+       2
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "epub_non_translatable": [
+  {
+   "text": "",
+   "result": true
+  },
+  {
+   "text": "   ",
+   "result": true
+  },
+  {
+   "text": "1",
+   "result": true
+  },
+  {
+   "text": "1.",
+   "result": true
+  },
+  {
+   "text": "1.2",
+   "result": true
+  },
+  {
+   "text": "III",
+   "result": true
+  },
+  {
+   "text": "IV.",
+   "result": true
+  },
+  {
+   "text": "(1)",
+   "result": true
+  },
+  {
+   "text": "1-",
+   "result": true
+  },
+  {
+   "text": "Hello",
+   "result": false
+  },
+  {
+   "text": "12 apples",
+   "result": false
+  },
+  {
+   "text": "—",
+   "result": true
+  },
+  {
+   "text": " ",
+   "result": true
+  },
+  {
+   "text": "MIX",
+   "result": true
+  },
+  {
+   "text": "civil",
+   "result": true
+  }
+ ],
+ "epub_whitespace": [
+  {
+   "html": "<p>Line one\n   continues here.</p><p>Next</p>",
+   "result": "<p>Line one continues here.</p>\n<p>Next</p>\n"
+  },
+  {
+   "html": "<p>A</p>\n\n\n<p>B</p>",
+   "result": "<p>A</p>\n\n\n<p>B</p>\n"
+  },
+  {
+   "html": "<pre>keep\n   this</pre><p>wrap\n   me</p>",
+   "result": "<pre>keep\n   this</pre><p>wrap me</p>\n"
+  },
+  {
+   "html": "<p>One<br/>Two<br>Three</p>",
+   "result": "<p>One<br/>Two<br>Three</p>\n"
+  },
+  {
+   "html": "<div>text   with    spaces</div>",
+   "result": "<div>text with spaces</div>\n"
+  }
+ ],
+ "epub_escape": [
+  {
+   "text": "plain text",
+   "result": "plain text"
+  },
+  {
+   "text": "Fish & chips",
+   "result": "Fish &amp; chips"
+  },
+  {
+   "text": "AT&T",
+   "result": "AT&amp;T"
+  },
+  {
+   "text": "&amp; already",
+   "result": "&amp; already"
+  },
+  {
+   "text": "caf&eacute; &nbsp; au lait",
+   "result": "café   au lait"
+  },
+  {
+   "text": "a < b > c",
+   "result": "a &lt; b &gt; c"
+  },
+  {
+   "text": "&#233; &#xE9; &#99999999;",
+   "result": "&#233; &#xE9; &amp;#99999999;"
+  },
+  {
+   "text": "&unknown; &",
+   "result": "&amp;unknown; &amp;"
+  },
+  {
+   "text": "<Skill> activated",
+   "result": "&lt;Skill&gt; activated"
+  },
+  {
+   "text": "[id0]Text &hellip;[id1]",
+   "result": "[id0]Text …[id1]"
+  }
+ ],
+ "epub_text_free": [
+  {
+   "text": "[id0]",
+   "result": true
+  },
+  {
+   "text": "[id0]==[id1]",
+   "result": true
+  },
+  {
+   "text": "[id0]……[id1]",
+   "result": true
+  },
+  {
+   "text": "[id0]第1章[id1]",
+   "result": false
+  },
+  {
+   "text": "[id0]2024[id1]",
+   "result": true
+  },
+  {
+   "text": "[id0]Hello[id1]",
+   "result": false
+  },
+  {
+   "text": "",
+   "result": true
+  }
+ ],
+ "epub_validate": [
+  {
+   "text": "[id0]Bonjour[id1] monde[id2]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "<b>",
+    "[id2]": "</b></p>"
+   },
+   "valid": true
+  },
+  {
+   "text": "[id0]Bonjour monde[id2]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "<b>",
+    "[id2]": "</p>"
+   },
+   "valid": false
+  },
+  {
+   "text": "[id1]Bonjour[id0] monde[id2]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "<b>",
+    "[id2]": "</p>"
+   },
+   "valid": true
+  },
+  {
+   "text": "[id0]Bonjour[id0] monde[id1]",
+   "tag_map": {
+    "[id0]": "<p>",
+    "[id1]": "</p>"
+   },
+   "valid": false
+  },
+  {
+   "text": "Bonjour",
+   "tag_map": {},
+   "valid": true
+  },
+  {
+   "text": "[id0]a[id1]b[id2]c[id3]",
+   "tag_map": {
+    "[id0]": "",
+    "[id1]": "",
+    "[id2]": ""
+   },
+   "valid": false
+  }
+ ],
+ "epub_restore": [
+  {
+   "text": "[id0]Bonjour[id1] monde[id2]",
+   "global_indices": [
+    5,
+    6,
+    7
+   ],
+   "result": "[id5]Bonjour[id6] monde[id7]"
+  },
+  {
+   "text": "[id0]a[id1]b[id10]",
+   "global_indices": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13
+   ],
+   "result": "[id3]a[id4]b[id13]"
+  },
+  {
+   "text": "no placeholders",
+   "global_indices": [],
+   "result": "no placeholders"
+  }
+ ],
+ "epub_align": [
+  {
+   "original": "[id0]Hello[id1] world[id2]",
+   "translated": "Bonjour monde",
+   "placeholders": [
+    "[id0]",
+    "[id1]",
+    "[id2]"
+   ],
+   "result": "[id0]Bonjour[id1] monde[id2]"
+  },
+  {
+   "original": "[id0]The [id1]quick[id2] brown fox[id3]",
+   "translated": "Le renard brun rapide",
+   "placeholders": [
+    "[id0]",
+    "[id1]",
+    "[id2]",
+    "[id3]"
+   ],
+   "result": "[id0]Le[id1] renard[id2] brun rapide[id3]"
+  },
+  {
+   "original": "[id0]Only text[id1]",
+   "translated": "Seulement du texte",
+   "placeholders": [
+    "[id0]",
+    "[id1]"
+   ],
+   "result": "[id0]Seulement du texte[id1]"
+  },
+  {
+   "original": "[id0][id1]Text[id2]",
+   "translated": "Texte",
+   "placeholders": [
+    "[id0]",
+    "[id1]",
+    "[id2]"
+   ],
+   "result": "[id0][id1]Texte[id2]"
+  },
+  {
+   "original": "[id0]他慢慢地走[id1]在路上[id2]",
+   "translated": "He walked slowly on the road",
+   "placeholders": [
+    "[id0]",
+    "[id1]",
+    "[id2]"
+   ],
+   "result": "[id0]He walked slowly[id1] on the road[id2]"
+  },
+  {
+   "original": "[id0]x[id1]",
+   "translated": "",
+   "placeholders": [
+    "[id0]",
+    "[id1]"
+   ],
+   "result": "[id0][id1]"
+  }
+ ],
+ "epub_reinsert": [
+  {
+   "original": "[id0]Hello [id1]world[id2]",
+   "translated": "Bonjour monde",
+   "positions": {
+    "0": 0.0,
+    "1": 0.5454545454545454,
+    "2": 1.0
+   },
+   "result": "[id0]Bonjour[id1] monde[id2]"
+  },
+  {
+   "original": "[id0]a[id1]b[id2]c[id3]",
+   "translated": "alpha beta gamma",
+   "positions": {
+    "0": 0.0,
+    "1": 0.3333333333333333,
+    "2": 0.6666666666666666,
+    "3": 1.0
+   },
+   "result": "[id0]alpha[id1] beta[id2] gamma[id3]"
+  }
+ ],
+ "epub_lang": [
+  {
+   "input": "English",
+   "result": "en"
+  },
+  {
+   "input": "french",
+   "result": "fr"
+  },
+  {
+   "input": "  German ",
+   "result": "de"
+  },
+  {
+   "input": "Portuguese (Brazil)",
+   "result": "pt-BR"
+  },
+  {
+   "input": "Portuguese (Portugal)",
+   "result": "pt-PT"
+  },
+  {
+   "input": "Portuguese",
+   "result": "pt"
+  },
+  {
+   "input": "en-US",
+   "result": "en"
+  },
+  {
+   "input": "fr",
+   "result": "fr"
+  },
+  {
+   "input": "zh-CN",
+   "result": "zh"
+  },
+  {
+   "input": "Arabic",
+   "result": "ar"
+  },
+  {
+   "input": "Hebrew",
+   "result": "he"
+  },
+  {
+   "input": "Persian",
+   "result": "fa"
+  },
+  {
+   "input": "Klingon",
+   "result": null
+  },
+  {
+   "input": "",
+   "result": null
+  },
+  {
+   "input": "Chinese",
+   "result": "zh"
+  },
+  {
+   "input": "Filipino",
+   "result": "fil"
+  },
+  {
+   "input": "Norwegian",
+   "result": "no"
+  }
  ]
 }

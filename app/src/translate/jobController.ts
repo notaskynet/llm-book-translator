@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { checkpointStore } from '../checkpoint';
 import type { JobRecord } from '../checkpoint/types';
-import { createAdapter, isSupportedFile, outputFileName } from '../formats';
+import { createAdapter, isSupportedFile, mimeTypeFor, outputFileName } from '../formats';
 import { OpenAICompatibleProvider } from '../llm/provider';
 import { useSettings } from '../store/settings';
 import { currentOptions, type TranslationOptions } from '../store/translation';
@@ -86,7 +86,11 @@ async function run(job: {
   try {
     const provider = new OpenAICompatibleProvider({ baseUrl, model, apiKeys: apiKey, log: onLog });
     const outcome = await translateJob({
-      adapter: createAdapter(fileName, input, { maxTokensPerChunk: options.maxTokensPerChunk }),
+      adapter: createAdapter(fileName, input, {
+        maxTokensPerChunk: options.maxTokensPerChunk,
+        targetLanguage: options.targetLanguage,
+        log: onLog,
+      }),
       store: checkpointStore,
       translationId: id,
       provider,
@@ -107,7 +111,7 @@ async function run(job: {
       outcome,
       stats: outcome.stats,
       output: bytes
-        ? { blob: new Blob([bytes as BlobPart], { type: 'text/plain;charset=utf-8' }), fileName: outputFileName(fileName, options.targetLanguage) }
+        ? { blob: new Blob([bytes as BlobPart], { type: mimeTypeFor(fileName) }), fileName: outputFileName(fileName, options.targetLanguage) }
         : undefined,
     });
   } finally {

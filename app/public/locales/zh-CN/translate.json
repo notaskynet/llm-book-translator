@@ -1,9 +1,9 @@
 {
   "title": "翻译",
   "drop": {
-    "hint": "将 .txt 或 .srt 文件拖到此处，或点击选择",
+    "hint": "将 .txt、.srt 或 .epub 文件拖到此处，或点击选择",
     "active": "松开以加载文件",
-    "unsupported": "目前仅支持 .txt 和 .srt 文件"
+    "unsupported": "仅支持 .txt、.srt 和 .epub 文件"
   },
   "source": "源语言",
   "target": "目标语言",
@@ -59,6 +59,11 @@
     "llm_request_failed": "请求失败",
     "translation_interrupted": "已被您停止",
     "rate_limited": "因服务商的速率限制而暂停",
-    "using_raw_response_fallback": "模型忽略了输出格式，正在使用其原始回答"
+    "using_raw_response_fallback": "模型忽略了输出格式，正在使用其原始回答",
+    "phase2_warning": "模型无法保留格式标签，正在自动重新定位（位置可能略有偏差）",
+    "fallback_untranslated": "有一段无法翻译，保留源语言",
+    "replace_body_error": "有一章无法重建，已保持原文",
+    "epub_file_not_found": "书中列出的某一章未找到，已跳过",
+    "epub_xml_error": "有一章无法读取，未翻译"
   }
 }

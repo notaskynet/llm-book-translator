@@ -1,5 +1,8 @@
 // Port of src/core/adapters/format_adapter.py and translation_unit.py.
 
+import type { LLMProvider, LogCallback } from '../llm/types';
+import type { PromptOptions } from '../prompts/prompts';
+
 export interface TranslationUnit {
   unitId: string;
   content: string;
@@ -16,8 +19,26 @@ export interface CheckpointChunk {
   chunkData: Record<string, unknown>;
 }
 
+/** What an adapter's own unit translation needs from the engine. */
+export interface UnitTranslationContext {
+  provider: LLMProvider;
+  sourceLanguage: string;
+  targetLanguage: string;
+  promptOptions: PromptOptions;
+  previousTranslationContext: string;
+  log?: LogCallback;
+  signal?: AbortSignal;
+}
+
 export interface FormatAdapter {
   readonly formatName: string;
+  /** Media type of the output file. */
+  readonly mimeType?: string;
+  /**
+   * Formats whose units need more than a plain translation request (EPUB: placeholders and
+   * a fallback chain) translate them here. Resolves to null when the unit failed.
+   */
+  translateUnit?(unit: TranslationUnit, context: UnitTranslationContext): Promise<string | null>;
   /** Parse the input and build the units. Returns false if the file is unusable. */
   prepareForTranslation(): Promise<boolean>;
   getTranslationUnits(): TranslationUnit[];
@@ -34,6 +55,9 @@ export interface AdapterConfig {
   maxTokensPerChunk?: number;
   softLimitRatio?: number;
   linesPerBlock?: number;
+  /** Used by EPUB to set the document language and localise the TOC. */
+  targetLanguage?: string;
+  log?: LogCallback;
 }
 
 export const encodeUtf8 = (s: string): Uint8Array => new TextEncoder().encode(s);

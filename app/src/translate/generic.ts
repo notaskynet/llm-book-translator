@@ -130,19 +130,27 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
       let result: string | null = null;
 
       for (let attempt = 0; attempt < maxValidationAttempts; attempt++) {
-        ({ translation: result } = await translateChunk({
-          mainContent: unit.content,
-          contextBefore: unit.contextBefore,
-          contextAfter: unit.contextAfter,
-          // Parallel runs have no stable "previous translation".
-          previousTranslationContext: sequential ? lastContext : '',
-          sourceLanguage,
-          targetLanguage,
-          provider,
-          promptOptions: attemptOptions,
-          log,
-          signal,
-        }));
+        // Parallel runs have no stable "previous translation".
+        const previousTranslationContext = sequential ? lastContext : '';
+        if (adapter.translateUnit) {
+          result = await adapter.translateUnit(unit, {
+            provider, sourceLanguage, targetLanguage, promptOptions: attemptOptions,
+            previousTranslationContext, log, signal,
+          });
+        } else {
+          ({ translation: result } = await translateChunk({
+            mainContent: unit.content,
+            contextBefore: unit.contextBefore,
+            contextAfter: unit.contextAfter,
+            previousTranslationContext,
+            sourceLanguage,
+            targetLanguage,
+            provider,
+            promptOptions: attemptOptions,
+            log,
+            signal,
+          }));
+        }
         if (!result) return result; // API failure / empty result
 
         const feedback = adapter.validateUnitTranslation(unit.unitId, result);
@@ -181,8 +189,6 @@ export async function translateJob(args: TranslateJobArgs): Promise<TranslationO
     };
 
     const partialOutput = async (): Promise<Uint8Array | undefined> => {
-      // EPUB partial output may not be valid; TXT/SRT reconstruct cheaply.
-      if (adapter.formatName !== 'txt' && adapter.formatName !== 'srt') return undefined;
       try {
         return await adapter.reconstructOutput({ bilingual });
       } catch (err) {

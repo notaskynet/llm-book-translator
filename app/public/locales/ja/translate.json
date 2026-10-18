@@ -1,9 +1,9 @@
 {
   "title": "翻訳",
   "drop": {
-    "hint": ".txt または .srt ファイルをここにドロップするか、クリックして選択",
+    "hint": ".txt、.srt、.epub ファイルをここにドロップするか、クリックして選択",
     "active": "ファイルをドロップして読み込み",
-    "unsupported": "現在は .txt と .srt ファイルのみ対応しています"
+    "unsupported": ".txt、.srt、.epub ファイルのみ対応しています"
   },
   "source": "原文の言語",
   "target": "翻訳先の言語",
@@ -59,6 +59,11 @@
     "llm_request_failed": "リクエストに失敗しました",
     "translation_interrupted": "ユーザーが停止しました",
     "rate_limited": "プロバイダーのレート制限により一時停止しました",
-    "using_raw_response_fallback": "モデルが出力形式を無視したため、生の回答を使用します"
+    "using_raw_response_fallback": "モデルが出力形式を無視したため、生の回答を使用します",
+    "phase2_warning": "モデルが書式タグを保持できなかったため、自動で位置を補正しています（位置が多少ずれる場合があります）",
+    "fallback_untranslated": "翻訳できなかった箇所があり、原文のままになります",
+    "replace_body_error": "再構築できなかった章があり、原文のままにしました",
+    "epub_file_not_found": "書籍に記載された章が見つからず、スキップしました",
+    "epub_xml_error": "読み込めなかった章があり、未翻訳のままです"
   }
 }
