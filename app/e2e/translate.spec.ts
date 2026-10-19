@@ -1,13 +1,13 @@
 import JSZip from 'jszip';
 import { expect, test } from '@playwright/test';
 import { buildEpub } from '../test/epubFixture';
-import { BASE, connect, cors, file, mockLlm } from './helpers';
+import { BASE, connect, cors, file, mockLlm, upload } from './helpers';
 
 test('connects, translates a TXT file and downloads the result', async ({ page }) => {
   const seen = await mockLlm(page);
   await connect(page);
 
-  await page.locator('input[type=file]').setInputFiles(file());
+  await upload(page, file());
   await expect(page.getByRole('status').last()).toContainText('Done');
 
   const download = page.waitForEvent('download');
@@ -19,6 +19,22 @@ test('connects, translates a TXT file and downloads the result', async ({ page }
   expect(text.match(/FR /g)).toHaveLength(seen.length);
   expect(text).toContain('Paragraph 11.');
   expect(seen.length).toBeGreaterThan(1);
+});
+
+test('a chosen file waits for the Translate button', async ({ page }) => {
+  const seen = await mockLlm(page);
+  await connect(page);
+  await page.locator('input[type=file]').setInputFiles(file('draft.txt'));
+  await expect(page.getByText('draft.txt')).toBeVisible();
+  await page.waitForTimeout(500);
+  expect(seen).toHaveLength(0);
+
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByText('draft.txt')).toHaveCount(0);
+
+  await upload(page, file());
+  await expect(page.getByRole('status').last()).toContainText('Done');
+  expect(seen.length).toBeGreaterThan(0);
 });
 
 test('rejects unsupported files', async ({ page }) => {
@@ -64,7 +80,7 @@ test('stops, survives a reload and resumes only the remaining units', async ({ p
   await page.getByText('Options').click();
   await page.getByLabel('Parallel requests').fill('1');
 
-  await page.locator('input[type=file]').setInputFiles(file());
+  await upload(page, file());
   await expect.poll(() => requests).toBeGreaterThan(0);
   await page.getByRole('button', { name: 'Stop' }).click();
   await expect(page.getByRole('status').last()).toContainText('Stopped');
@@ -99,7 +115,7 @@ test('translates an EPUB in a real browser and keeps it a valid book', async ({ 
   });
   await connect(page);
 
-  await page.locator('input[type=file]').setInputFiles({
+  await upload(page, {
     name: 'novel.epub',
     mimeType: 'application/epub+zip',
     buffer: Buffer.from(await buildEpub({ paragraphs: 6 })),

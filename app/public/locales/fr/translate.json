@@ -78,5 +78,7 @@
   "task_refine": "Peaufiner une traduction existante",
   "refine_after": "Peaufiner la traduction ensuite (seconde passe)",
   "file_language": "Langue du fichier",
-  "download_draft": "Télécharger la traduction avant peaufinage"
+  "download_draft": "Télécharger la traduction avant peaufinage",
+  "start": "Traduire",
+  "start_refine": "Peaufiner"
 }

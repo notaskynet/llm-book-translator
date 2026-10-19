@@ -26,12 +26,15 @@ const VISIBLE_EVENTS = new Set([
 export function TranslatePanel() {
   const { t, i18n } = useTranslation('translate');
   const { t: tg } = useTranslation('glossary');
+  const { t: tc } = useTranslation('common');
   const presets = useLiveQuery(() => library.listPresets(), []) ?? [];
   const glossaries = useLiveQuery(() => library.listGlossaries(), []) ?? [];
   const options = useTranslationOptions();
   const { apiKey, model } = useSettings();
   const job = useJob();
   const [error, setError] = useState<string | null>(null);
+  // The chosen file waits for the button: a translation costs money, so a drop never starts one.
+  const [file, setFile] = useState<File | null>(null);
   const ready = Boolean(model) && Boolean(apiKey);
   const running = job.phase === 'running';
 
@@ -46,7 +49,7 @@ export function TranslatePanel() {
       if (!file) return;
       if (!isSupportedFile(file.name)) return setError('drop.unsupported');
       setError(null);
-      void startJob(file);
+      setFile(file);
     },
   });
 
@@ -161,7 +164,19 @@ export function TranslatePanel() {
         </div>
       </details>
 
-      {!running && job.phase !== 'finished' && (
+      {!running && job.phase !== 'finished' && file && (
+        <div className="flex flex-wrap items-center gap-3 rounded-lg border p-3 text-sm">
+          <span className="min-w-0 flex-1 truncate font-medium" title={file.name}>{file.name}</span>
+          <button className="rounded border px-3 py-1" onClick={() => setFile(null)}>{tc('cancel')}</button>
+          <button
+            className="rounded bg-accent px-4 py-1 text-accent-fg"
+            onClick={() => { setFile(null); void startJob(file); }}
+          >
+            {t(options.task === 'refine' ? 'start_refine' : 'start')}
+          </button>
+        </div>
+      )}
+      {!running && job.phase !== 'finished' && !file && (
         <div
           {...getRootProps()}
           className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm ${isDragActive ? 'border-accent' : 'border-gray-300'} ${ready ? '' : 'opacity-50'}`}

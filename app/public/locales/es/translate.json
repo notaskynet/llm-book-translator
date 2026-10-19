@@ -78,5 +78,7 @@
   "task_refine": "Pulir una traducción existente",
   "refine_after": "Pulir la traducción después (segunda pasada)",
   "file_language": "Idioma del archivo",
-  "download_draft": "Descargar la traducción antes de pulir"
+  "download_draft": "Descargar la traducción antes de pulir",
+  "start": "Traducir",
+  "start_refine": "Pulir"
 }

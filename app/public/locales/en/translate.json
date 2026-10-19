@@ -78,5 +78,7 @@
   "task_refine": "Polish an existing translation",
   "refine_after": "Polish the translation afterwards (second pass)",
   "file_language": "Language of the file",
-  "download_draft": "Download the translation before polishing"
+  "download_draft": "Download the translation before polishing",
+  "start": "Translate",
+  "start_refine": "Polish"
 }

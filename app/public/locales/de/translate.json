@@ -78,5 +78,7 @@
   "task_refine": "Eine vorhandene Übersetzung überarbeiten",
   "refine_after": "Die Übersetzung anschließend überarbeiten (zweiter Durchgang)",
   "file_language": "Sprache der Datei",
-  "download_draft": "Übersetzung vor der Überarbeitung herunterladen"
+  "download_draft": "Übersetzung vor der Überarbeitung herunterladen",
+  "start": "Übersetzen",
+  "start_refine": "Überarbeiten"
 }
