@@ -164,7 +164,7 @@ export function TranslatePanel() {
       {!running && job.phase !== 'finished' && (
         <div
           {...getRootProps()}
-          className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm ${isDragActive ? 'border-black' : 'border-gray-300'} ${ready ? '' : 'opacity-50'}`}
+          className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm ${isDragActive ? 'border-accent' : 'border-gray-300'} ${ready ? '' : 'opacity-50'}`}
         >
           <input {...getInputProps({ accept: SUPPORTED_EXTENSIONS.join(',') })} />
           {isDragActive ? t('drop.active') : t(options.task === 'refine' ? 'drop.hintRefine' : 'drop.hint')}
@@ -178,7 +178,7 @@ export function TranslatePanel() {
           {stats && (
             <>
               <div className="h-2 w-full overflow-hidden rounded bg-gray-200" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
-                <div className="h-full bg-black transition-all" style={{ width: `${percent}%` }} />
+                <div className="h-full bg-accent transition-all" style={{ width: `${percent}%` }} />
               </div>
               <p className="text-xs text-gray-600">
                 {t('progress', { done: stats.completedChunks, total: stats.totalChunks })}
@@ -212,7 +212,7 @@ export function TranslatePanel() {
           {job.phase === 'finished' && (
             <div className="flex gap-2">
               {job.output && (
-                <button className="rounded bg-black px-3 py-1 text-sm text-white" onClick={() => saveAs(job.output!.blob, job.output!.fileName)}>
+                <button className="rounded bg-accent px-3 py-1 text-sm text-accent-fg" onClick={() => saveAs(job.output!.blob, job.output!.fileName)}>
                   {t('download')}
                 </button>
               )}
@@ -249,7 +249,7 @@ export function TranslatePanel() {
                   {r.fileName} <span className="text-gray-500">({t(`resume.state.${r.status}`)}{r.config.mode === 'refine' ? `, ${t('resume.refineBadge')}` : ''})</span>
                 </span>
                 <span className="flex shrink-0 gap-2">
-                  <button className="rounded bg-black px-2 py-1 text-white disabled:opacity-50" disabled={!ready} onClick={() => void resumeJob(r.id)}>
+                  <button className="rounded bg-accent px-2 py-1 text-accent-fg disabled:opacity-50" disabled={!ready} onClick={() => void resumeJob(r.id)}>
                     {t('resume.action')}
                   </button>
                   <button className="rounded border px-2 py-1" onClick={() => void discardJob(r.id)}>{t('resume.discard')}</button>

@@ -77,7 +77,7 @@ export function GlossariesPanel() {
           {t('name_label')}
           <input className="mt-1 block rounded border px-2 py-1" value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void create()} />
         </label>
-        <button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={!newName.trim()} onClick={() => void create()}>{t('new_glossary')}</button>
+        <button className="rounded bg-accent px-3 py-1 text-accent-fg disabled:opacity-50" disabled={!newName.trim()} onClick={() => void create()}>{t('new_glossary')}</button>
         <button className="rounded border px-3 py-1" onClick={() => importRef.current?.click()}>{t('import_csv_json')}</button>
         <input ref={importRef} type="file" hidden accept=".csv,.json" aria-label={t('import_csv_json')} onChange={(e) => void importAsNew(e.target.files?.[0])} />
       </div>
@@ -97,7 +97,7 @@ export function GlossariesPanel() {
                 </span>
                 <span className="flex gap-2">
                   <button
-                    className={`rounded border px-2 py-1 ${active ? 'bg-black text-white' : ''}`}
+                    className={`rounded border px-2 py-1 ${active ? 'bg-accent text-accent-fg' : ''}`}
                     aria-pressed={active}
                     title={active ? t('unassign_title') : t('assign_title')}
                     onClick={() => { set({ glossaryId: active ? null : g.id! }); setMessage({ text: t(active ? 'unassigned_msg' : 'assigned_msg', { name: g.name }) }); }}

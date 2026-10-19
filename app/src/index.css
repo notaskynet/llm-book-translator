@@ -1,1 +1,100 @@
 @import "tailwindcss";
+
+/* Semantic colours. Components use bg-page / bg-surface / bg-accent / text-accent-fg; the
+   Tailwind greys and status colours that the UI still uses are re-tuned for dark mode below. */
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-line: var(--line);
+}
+
+:root {
+  color-scheme: light;
+  --page: #f5f6fa;
+  --surface: #ffffff;
+  --line: #dfe2ea;
+  --text: #1a1c23;
+  --hover: #eef0f6;
+  --accent: #4f46e5;
+  --accent-fg: #ffffff;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.06);
+}
+
+/* Dark: chosen explicitly, or by the OS when no theme is set. The two blocks must stay identical. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0e1016;
+  --surface: #161922;
+  --line: #2a2f3c;
+  --text: #e7e9ef;
+  --hover: #20242f;
+  --accent: #6366f1;
+  --accent-fg: #ffffff;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+  --color-gray-50: #1b1e28;
+  --color-gray-100: #20242f;
+  --color-gray-200: #2c3140;
+  --color-gray-300: #3c4354;
+  --color-gray-500: #9aa2b4;
+  --color-gray-600: #a9b0c0;
+  --color-red-100: #3d1d22;
+  --color-red-700: #f87171;
+  --color-green-700: #4ade80;
+  --color-amber-100: #3b2d0e;
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fbbf24;
+  --color-yellow-200: #5b4a0c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --page: #0e1016;
+    --surface: #161922;
+    --line: #2a2f3c;
+    --text: #e7e9ef;
+    --hover: #20242f;
+    --accent: #6366f1;
+    --accent-fg: #ffffff;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+    --color-gray-50: #1b1e28;
+    --color-gray-100: #20242f;
+    --color-gray-200: #2c3140;
+    --color-gray-300: #3c4354;
+    --color-gray-500: #9aa2b4;
+    --color-gray-600: #a9b0c0;
+    --color-red-100: #3d1d22;
+    --color-red-700: #f87171;
+    --color-green-700: #4ade80;
+    --color-amber-100: #3b2d0e;
+    --color-amber-600: #fbbf24;
+    --color-amber-700: #fbbf24;
+    --color-yellow-200: #5b4a0c;
+  }
+}
+
+@layer base {
+  *, ::before, ::after { border-color: var(--line); }
+  body {
+    background: var(--page);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  input, select, textarea { background: var(--surface); color: inherit; }
+  input::placeholder, textarea::placeholder { color: var(--color-gray-500, #9aa1b2); }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button { cursor: pointer; transition: background-color 0.15s, border-color 0.15s, opacity 0.15s; }
+  button:disabled { cursor: not-allowed; }
+  /* Outline buttons get a hover state; filled and tab buttons keep their own. */
+  button:not(.bg-accent):not([role="tab"]):not(:disabled):hover { background: var(--hover); }
+  button.bg-accent:not(:disabled):hover { filter: brightness(1.1); }
+  a { color: var(--accent); }
+}
+
+@layer components {
+  /* The cards of each panel. */
+  section.rounded-lg { background: var(--surface); box-shadow: var(--shadow); }
+}

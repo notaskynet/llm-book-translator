@@ -109,7 +109,7 @@ export function StyleExtractDialog({ onClose, onCreated }: { onClose: () => void
                 <input type="number" min={1} max={20} className="mt-1 block w-20 rounded border px-2 py-1" value={sampleCount} onChange={(e) => setSampleCount(Math.min(20, Math.max(1, Number(e.target.value) || 6)))} />
               </label>
             </div>
-            <button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={busy || !files.length} onClick={() => void run()}>
+            <button className="rounded bg-accent px-3 py-1 text-accent-fg disabled:opacity-50" disabled={busy || !files.length} onClick={() => void run()}>
               {busy ? t('extracting') : t('run_extract')}
             </button>
           </>
@@ -144,7 +144,7 @@ export function StyleExtractDialog({ onClose, onCreated }: { onClose: () => void
               <summary className="cursor-pointer">{t('preview_title')}</summary>
               <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap text-xs">{assembled.translation}</pre>
             </details>
-            <button className="rounded bg-black px-3 py-1 text-white" onClick={() => void create()}>{t('create_preset')}</button>
+            <button className="rounded bg-accent px-3 py-1 text-accent-fg" onClick={() => void create()}>{t('create_preset')}</button>
           </>
         )}
         {error && <p role="alert" className="text-red-700">{error}</p>}

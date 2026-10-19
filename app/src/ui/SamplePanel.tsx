@@ -226,7 +226,7 @@ export function SamplePanel() {
         {running ? (
           <button className="rounded border px-3 py-1" onClick={() => abort.current?.abort()}>{t('stop')}</button>
         ) : (
-          <button className="rounded bg-black px-3 py-1 text-white" onClick={() => void run()}>{t('run')}</button>
+          <button className="rounded bg-accent px-3 py-1 text-accent-fg" onClick={() => void run()}>{t('run')}</button>
         )}
         <button className="rounded border px-3 py-1 disabled:opacity-50" disabled={!items.length} onClick={() => void copyMarkdown()}>{t('copy_markdown')}</button>
         {columns.length > 1 && (

@@ -25,7 +25,7 @@ export function GlossaryPreviewDialog({ glossary, onClose }: { glossary: Glossar
       <div className="space-y-3 text-sm">
         <p>{t('preview_modal_intro')}</p>
         <textarea aria-label={t('preview_input_placeholder')} className="block w-full rounded border px-2 py-1" rows={5} placeholder={t('preview_input_placeholder')} value={sample} onChange={(e) => setSample(e.target.value)} />
-        <button className="rounded bg-black px-3 py-1 text-white" onClick={render}>{t('preview_render')}</button>
+        <button className="rounded bg-accent px-3 py-1 text-accent-fg" onClick={render}>{t('preview_render')}</button>
         {result && (
           <>
             <p>
