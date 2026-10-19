@@ -1,0 +1,16 @@
+{
+  "title": "Conexión",
+  "baseUrl": "URL base",
+  "preset": "Preajuste",
+  "custom": "Personalizado",
+  "apiKey": "Clave API",
+  "remember": "Recordar en este dispositivo",
+  "rememberWarning": "Se guarda en texto plano en el localStorage de este navegador. Actívalo solo en un dispositivo de confianza.",
+  "model": "Modelo",
+  "loadModels": "Cargar modelos",
+  "test": "Probar conexión",
+  "connected": "Conectado: {{count}} modelos disponibles",
+  "unauthorized": "Clave API no válida",
+  "network": "No se puede acceder al servidor. Es posible que el proveedor bloquee las solicitudes del navegador (CORS).",
+  "failed": "La solicitud falló"
+}

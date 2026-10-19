@@ -1,0 +1,16 @@
+{
+  "title": "接続",
+  "baseUrl": "ベース URL",
+  "preset": "プリセット",
+  "custom": "カスタム",
+  "apiKey": "API キー",
+  "remember": "このデバイスに保存する",
+  "rememberWarning": "このブラウザの localStorage に平文で保存されます。信頼できるデバイスでのみ有効にしてください。",
+  "model": "モデル",
+  "loadModels": "モデルを読み込む",
+  "test": "接続をテスト",
+  "connected": "接続しました：利用可能なモデル {{count}} 件",
+  "unauthorized": "API キーが無効です",
+  "network": "サーバーに接続できません。プロバイダーがブラウザからのリクエストをブロックしている可能性があります（CORS）。",
+  "failed": "リクエストに失敗しました"
+}

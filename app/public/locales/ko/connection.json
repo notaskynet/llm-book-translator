@@ -1,0 +1,16 @@
+{
+  "title": "연결",
+  "baseUrl": "기본 URL",
+  "preset": "프리셋",
+  "custom": "사용자 지정",
+  "apiKey": "API 키",
+  "remember": "이 기기에 기억하기",
+  "rememberWarning": "이 브라우저의 localStorage에 평문으로 저장됩니다. 신뢰할 수 있는 기기에서만 사용하세요.",
+  "model": "모델",
+  "loadModels": "모델 불러오기",
+  "test": "연결 테스트",
+  "connected": "연결됨: 사용 가능한 모델 {{count}}개",
+  "unauthorized": "잘못된 API 키",
+  "network": "서버에 연결할 수 없습니다. 제공업체가 브라우저 요청(CORS)을 차단했을 수 있습니다.",
+  "failed": "요청 실패"
+}

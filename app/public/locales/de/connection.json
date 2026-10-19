@@ -1,0 +1,16 @@
+{
+  "title": "Verbindung",
+  "baseUrl": "Basis-URL",
+  "preset": "Voreinstellung",
+  "custom": "Benutzerdefiniert",
+  "apiKey": "API-Schlüssel",
+  "remember": "Auf diesem Gerät merken",
+  "rememberWarning": "Wird im Klartext im localStorage dieses Browsers gespeichert. Nur auf einem vertrauenswürdigen Gerät aktivieren.",
+  "model": "Modell",
+  "loadModels": "Modelle laden",
+  "test": "Verbindung testen",
+  "connected": "Verbunden: {{count}} Modelle verfügbar",
+  "unauthorized": "Ungültiger API-Schlüssel",
+  "network": "Server nicht erreichbar. Der Anbieter blockiert möglicherweise Browser-Anfragen (CORS).",
+  "failed": "Anfrage fehlgeschlagen"
+}
