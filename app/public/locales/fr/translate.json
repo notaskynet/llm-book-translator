@@ -1,10 +1,10 @@
 {
   "title": "Traduire",
   "drop": {
-    "hint": "Déposez un fichier .txt, .srt ou .epub ici, ou cliquez pour en choisir un",
+    "hint": "Déposez un fichier .txt, .srt, .epub, .docx ou .pdf ici, ou cliquez pour en choisir un",
     "active": "Déposez le fichier pour le charger",
-    "unsupported": "Seuls les fichiers .txt, .srt et .epub sont pris en charge",
-    "hintRefine": "Déposez ici un fichier .txt, .srt ou .epub déjà traduit, ou cliquez pour en choisir un"
+    "unsupported": "Seuls les fichiers .txt, .srt, .epub, .docx et .pdf sont pris en charge",
+    "hintRefine": "Déposez ici un fichier .txt, .srt, .epub, .docx ou .pdf déjà traduit, ou cliquez pour en choisir un"
   },
   "source": "Langue source",
   "target": "Langue cible",
@@ -67,7 +67,8 @@
     "fallback_untranslated": "Un passage n'a pas pu être traduit et reste dans la langue source",
     "replace_body_error": "Un chapitre n'a pas pu être reconstruit et a été laissé tel qu'à la source",
     "epub_file_not_found": "Un chapitre listé dans le livre est introuvable et a été ignoré",
-    "epub_xml_error": "Un chapitre n'a pas pu être lu et n'a pas été traduit"
+    "epub_xml_error": "Un chapitre n'a pas pu être lu et n'a pas été traduit",
+    "pdf_no_text": "Le PDF n'a pas de couche de texte (est-ce un scan ?), il n'y a rien à traduire"
   },
   "style_select": "Style",
   "glossary_select": "Glossaire",

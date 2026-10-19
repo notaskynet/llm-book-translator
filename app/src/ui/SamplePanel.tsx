@@ -7,6 +7,7 @@ import type { GlossaryOptions } from '@/glossary/chunkBlock';
 import { termsMap, termsMetadata } from '@/glossary/models';
 import { DocumentTooSmallError, initialSamples, itemsForIndices, loadSourceUnits, pickRandomUnusedIndex, type SampleItem, type SampleWarning, type SourceUnit } from '@/sample/items';
 import { runSample, type CellKey, type CellResult, type ColumnSetup, type SampleColumn, type SampleMode } from '@/sample/run';
+import { SUPPORTED_EXTS } from '@/documents/sampler';
 import { useSettings } from '@/store/settings';
 import { useTranslationOptions } from '@/store/translation';
 
@@ -162,7 +163,7 @@ export function SamplePanel() {
 
       <label className="block">
         {t('drop_file_title')}
-        <input type="file" accept=".txt,.srt,.epub" className="mt-1 block w-full" disabled={running} onChange={(e) => void pickFile(e.target.files?.[0])} />
+        <input type="file" accept={SUPPORTED_EXTS.join(',')} className="mt-1 block w-full" disabled={running} onChange={(e) => void pickFile(e.target.files?.[0])} />
       </label>
       {fileName && <p>{t('selected_file')}: <strong>{fileName}</strong></p>}
 

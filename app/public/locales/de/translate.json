@@ -1,10 +1,10 @@
 {
   "title": "Übersetzen",
   "drop": {
-    "hint": "Eine .txt-, .srt- oder .epub-Datei hierher ziehen oder zum Auswählen klicken",
+    "hint": "Eine .txt-, .srt-, .epub-, .docx- oder .pdf-Datei hierher ziehen oder zum Auswählen klicken",
     "active": "Datei ablegen, um sie zu laden",
-    "unsupported": "Es werden nur .txt-, .srt- und .epub-Dateien unterstützt",
-    "hintRefine": "Eine bereits übersetzte .txt-, .srt- oder .epub-Datei hierher ziehen oder zum Auswählen klicken"
+    "unsupported": "Es werden nur .txt-, .srt-, .epub-, .docx- und .pdf-Dateien unterstützt",
+    "hintRefine": "Eine bereits übersetzte .txt-, .srt-, .epub-, .docx- oder .pdf-Datei hierher ziehen oder zum Auswählen klicken"
   },
   "source": "Ausgangssprache",
   "target": "Zielsprache",
@@ -67,7 +67,8 @@
     "fallback_untranslated": "Eine Passage konnte nicht übersetzt werden und bleibt in der Ausgangssprache",
     "replace_body_error": "Ein Kapitel konnte nicht neu aufgebaut werden und blieb wie im Original",
     "epub_file_not_found": "Ein im Buch aufgeführtes Kapitel wurde nicht gefunden und übersprungen",
-    "epub_xml_error": "Ein Kapitel konnte nicht gelesen werden und blieb unübersetzt"
+    "epub_xml_error": "Ein Kapitel konnte nicht gelesen werden und blieb unübersetzt",
+    "pdf_no_text": "Das PDF hat keine Textebene (ist es ein Scan?), es gibt also nichts zu übersetzen"
   },
   "style_select": "Stil",
   "glossary_select": "Glossar",

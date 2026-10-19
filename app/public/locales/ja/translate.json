@@ -1,10 +1,10 @@
 {
   "title": "翻訳",
   "drop": {
-    "hint": ".txt、.srt、.epub ファイルをここにドロップするか、クリックして選択",
+    "hint": ".txt、.srt、.epub、.docx、.pdf ファイルをここにドロップするか、クリックして選択",
     "active": "ファイルをドロップして読み込み",
-    "unsupported": ".txt、.srt、.epub ファイルのみ対応しています",
-    "hintRefine": "翻訳済みの .txt、.srt、.epub ファイルをここにドロップするか、クリックして選択"
+    "unsupported": ".txt、.srt、.epub、.docx、.pdf ファイルのみ対応しています",
+    "hintRefine": "翻訳済みの .txt、.srt、.epub、.docx、.pdf ファイルをここにドロップするか、クリックして選択"
   },
   "source": "原文の言語",
   "target": "翻訳先の言語",
@@ -67,7 +67,8 @@
     "fallback_untranslated": "翻訳できなかった箇所があり、原文のままになります",
     "replace_body_error": "再構築できなかった章があり、原文のままにしました",
     "epub_file_not_found": "書籍に記載された章が見つからず、スキップしました",
-    "epub_xml_error": "読み込めなかった章があり、未翻訳のままです"
+    "epub_xml_error": "読み込めなかった章があり、未翻訳のままです",
+    "pdf_no_text": "このPDFにはテキスト層がありません（スキャンでは？）。翻訳できるものがありません"
   },
   "style_select": "スタイル",
   "glossary_select": "用語集",

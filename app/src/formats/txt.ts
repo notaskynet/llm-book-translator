@@ -40,19 +40,24 @@ export function joinTranslatedChunks(
 }
 
 export class TxtAdapter implements FormatAdapter {
-  readonly formatName = 'txt';
+  readonly formatName: string = 'txt';
   private chunks: Chunk[] = [];
   private translated: Array<string | null> = [];
 
   constructor(
-    private readonly input: ArrayBuffer | Uint8Array,
-    private readonly config: AdapterConfig = {},
+    protected readonly input: ArrayBuffer | Uint8Array,
+    protected readonly config: AdapterConfig = {},
   ) {}
+
+  /** The text to translate; subclasses whose input is not UTF-8 text override this. */
+  protected async loadText(): Promise<string> {
+    return decodeUtf8(this.input);
+  }
 
   async prepareForTranslation(): Promise<boolean> {
     try {
       await initTokenizer();
-      const text = decodeUtf8(this.input);
+      const text = await this.loadText();
       const chunker = new TokenChunker(
         this.config.maxTokensPerChunk ?? DEFAULT_MAX_TOKENS_PER_CHUNK,
         this.config.softLimitRatio ?? SOFT_LIMIT_RATIO,

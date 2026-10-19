@@ -1,10 +1,10 @@
 {
   "title": "翻译",
   "drop": {
-    "hint": "将 .txt、.srt 或 .epub 文件拖到此处，或点击选择",
+    "hint": "将 .txt、.srt、.epub、.docx 或 .pdf 文件拖到此处，或点击选择",
     "active": "松开以加载文件",
-    "unsupported": "仅支持 .txt、.srt 和 .epub 文件",
-    "hintRefine": "将已翻译的 .txt、.srt 或 .epub 文件拖到此处，或点击选择"
+    "unsupported": "仅支持 .txt、.srt、.epub、.docx 和 .pdf 文件",
+    "hintRefine": "将已翻译的 .txt、.srt、.epub、.docx 或 .pdf 文件拖到此处，或点击选择"
   },
   "source": "源语言",
   "target": "目标语言",
@@ -67,7 +67,8 @@
     "fallback_untranslated": "有一段无法翻译，保留源语言",
     "replace_body_error": "有一章无法重建，已保持原文",
     "epub_file_not_found": "书中列出的某一章未找到，已跳过",
-    "epub_xml_error": "有一章无法读取，未翻译"
+    "epub_xml_error": "有一章无法读取，未翻译",
+    "pdf_no_text": "该 PDF 没有文本层（是扫描件吗？），没有可翻译的内容"
   },
   "style_select": "风格",
   "glossary_select": "术语表",

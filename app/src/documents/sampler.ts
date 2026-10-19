@@ -7,7 +7,7 @@ import { dirname, joinPath, unquote } from '../epub/zipUtils';
 import { roundHalfEven } from '../lib/pyRound';
 
 export const TEXT_EXTS = ['.txt', '.srt'];
-export const SUPPORTED_EXTS = [...TEXT_EXTS, '.epub'];
+export const SUPPORTED_EXTS = [...TEXT_EXTS, '.epub', '.docx', '.pdf'];
 /** Hard cap on text pulled from one file before sampling. */
 export const FULL_TEXT_CAP = 5_000_000;
 /** Visible separator between non-contiguous excerpts; the model reads it as a discontinuity. */
@@ -91,13 +91,53 @@ export async function extractEpubParagraphs(data: ArrayBuffer | Uint8Array, hard
   return text;
 }
 
+const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+
+/** The paragraphs of a DOCX body, blank-line separated. */
+async function extractDocxText(data: ArrayBuffer | Uint8Array, hardCap: number): Promise<string | null> {
+  try {
+    const xml = await (await JSZip.loadAsync(data)).file('word/document.xml')?.async('string');
+    const doc = xml ? parseXml(xml) : null;
+    if (!doc) return null;
+    const paragraphs: string[] = [];
+    let total = 0;
+    for (const p of Array.from(doc.getElementsByTagNameNS(W_NS, 'p'))) {
+      const text = Array.from(p.getElementsByTagNameNS(W_NS, 't')).map((t) => t.textContent ?? '').join('').trim();
+      if (!text) continue;
+      paragraphs.push(text);
+      total += text.length;
+      if (total >= hardCap) break;
+    }
+    return paragraphs.join('\n\n').slice(0, hardCap) || null;
+  } catch {
+    return null;
+  }
+}
+
+async function extractPdf(data: ArrayBuffer | Uint8Array, hardCap: number): Promise<string | null> {
+  try {
+    const { extractPdfText } = await import('./pdf');
+    return (await extractPdfText(data)).slice(0, hardCap) || null;
+  } catch {
+    return null;
+  }
+}
+
+/** Blank-line-separated paragraphs of any supported document (Sample & Compare chunks these). */
+export async function extractParagraphs(ext: string, data: ArrayBuffer | Uint8Array, hardCap = FULL_TEXT_CAP): Promise<string | null> {
+  if (ext === '.epub') return extractEpubText(data, hardCap, true);
+  if (ext === '.docx') return extractDocxText(data, hardCap);
+  if (ext === '.pdf') return extractPdf(data, hardCap);
+  return new TextDecoder('utf-8').decode(data).replace(/^\uFEFF/, '').slice(0, hardCap);
+}
+
 /** The full readable text of a file (capped), or null when unsupported or unreadable. */
 export async function extractFullText(file: File | { name: string; arrayBuffer(): Promise<ArrayBuffer> }, hardCap = FULL_TEXT_CAP): Promise<string | null> {
   const ext = extensionOf(file.name);
   if (!SUPPORTED_EXTS.includes(ext) || hardCap <= 0) return null;
   const data = await file.arrayBuffer();
   if (ext === '.epub') return extractEpubText(data, hardCap);
-  return new TextDecoder('utf-8').decode(data).replace(/^\uFEFF/, '').slice(0, hardCap);
+  return extractParagraphs(ext, data, hardCap);
 }
 
 const rfind = (text: string, sub: string, lo: number, hi: number) => {

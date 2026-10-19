@@ -4,7 +4,7 @@
 
 import { DEFAULT_MAX_TOKENS_PER_CHUNK, SRT_LINES_PER_BLOCK } from '../config';
 import { TokenChunker, initTokenizer } from '../chunking/tokenChunker';
-import { extractEpubParagraphs } from '../documents/sampler';
+import { extractParagraphs } from '../documents/sampler';
 import { parseSrt } from '../formats/srtProcessor';
 import { capChunkText, selectSampleIndices } from './select';
 
@@ -55,7 +55,7 @@ export async function loadSourceUnits(file: { name: string; arrayBuffer(): Promi
     }));
   }
 
-  const text = ext === '.epub' ? await extractEpubParagraphs(data) : new TextDecoder().decode(data).replace(/^\uFEFF/, '');
+  const text = await extractParagraphs(ext, data);
   if (!text?.trim()) throw new Error('File is empty or unreadable');
   await initTokenizer();
   return new TokenChunker(DEFAULT_MAX_TOKENS_PER_CHUNK).chunkText(text).map((c) => ({

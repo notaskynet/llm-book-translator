@@ -1,9 +1,11 @@
+import { DocxAdapter } from '../docx/adapter';
 import { EpubAdapter } from '../epub/adapter';
+import { PdfAdapter } from './pdf';
 import { SrtAdapter } from './srt';
 import { TxtAdapter } from './txt';
 import type { AdapterConfig, FormatAdapter } from './types';
 
-export const SUPPORTED_EXTENSIONS = ['.txt', '.srt', '.epub'] as const;
+export const SUPPORTED_EXTENSIONS = ['.txt', '.srt', '.epub', '.docx', '.pdf'] as const;
 
 export function fileExtension(fileName: string): string {
   const dot = fileName.lastIndexOf('.');
@@ -22,25 +24,41 @@ export function createAdapter(fileName: string, input: ArrayBuffer, config: Adap
       return new SrtAdapter(input, config);
     case '.epub':
       return new EpubAdapter(input, config);
+    case '.docx':
+      return new DocxAdapter(input, config);
+    case '.pdf':
+      return new PdfAdapter(input, config);
     default:
       throw new Error(`Unsupported file type: ${fileName}`);
   }
 }
 
+/** A PDF is translated as text, so its output is a .txt file. */
+const outputExtension = (fileName: string) => {
+  const ext = fileExtension(fileName);
+  return ext === '.pdf' ? '.txt' : ext;
+};
+
+const stem = (fileName: string) => {
+  const ext = fileExtension(fileName);
+  return ext ? fileName.slice(0, -ext.length) : fileName;
+};
+
 /** `book.txt` -> `book (French).txt` */
 export function outputFileName(fileName: string, targetLanguage: string): string {
-  const ext = fileExtension(fileName);
-  const base = ext ? fileName.slice(0, -ext.length) : fileName;
-  return `${base} (${targetLanguage})${ext}`;
+  return `${stem(fileName)} (${targetLanguage})${outputExtension(fileName)}`;
 }
 
+const MIME_TYPES: Record<string, string> = {
+  '.epub': 'application/epub+zip',
+  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+};
+
 export function mimeTypeFor(fileName: string): string {
-  return fileExtension(fileName) === '.epub' ? 'application/epub+zip' : 'text/plain;charset=utf-8';
+  return MIME_TYPES[fileExtension(fileName)] ?? 'text/plain;charset=utf-8';
 }
 
 /** `book (French).txt` -> `book (French) (refined).txt` */
 export function refinedFileName(fileName: string): string {
-  const ext = fileExtension(fileName);
-  const base = ext ? fileName.slice(0, -ext.length) : fileName;
-  return `${base} (refined)${ext}`;
+  return `${stem(fileName)} (refined)${outputExtension(fileName)}`;
 }

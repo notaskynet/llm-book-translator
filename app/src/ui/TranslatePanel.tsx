@@ -20,7 +20,7 @@ const VISIBLE_EVENTS = new Set([
   'empty_llm_response', 'output_truncated', 'unclosed_translation_tag', 'context_overflow_retry',
   'context_overflow_fatal', 'llm_key_rotated', 'llm_rate_limit', 'llm_request_failed',
   'translation_interrupted', 'rate_limited', 'using_raw_response_fallback', 'phase2_warning',
-  'fallback_untranslated', 'replace_body_error', 'epub_file_not_found', 'epub_xml_error',
+  'fallback_untranslated', 'replace_body_error', 'epub_file_not_found', 'epub_xml_error', 'pdf_no_text',
 ]);
 
 export function TranslatePanel() {

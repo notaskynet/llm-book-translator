@@ -25,7 +25,7 @@ test('rejects unsupported files', async ({ page }) => {
   await mockLlm(page);
   await connect(page);
   await page.locator('input[type=file]').setInputFiles({ name: 'cover.png', mimeType: 'image/png', buffer: Buffer.from('x') });
-  await expect(page.getByRole('alert')).toContainText('.txt, .srt and .epub');
+  await expect(page.getByRole('alert')).toContainText('.txt, .srt, .epub, .docx and .pdf');
 });
 
 test('shows a clear error for a wrong API key', async ({ page }) => {

@@ -1,10 +1,10 @@
 {
   "title": "Translate",
   "drop": {
-    "hint": "Drop a .txt, .srt or .epub file here, or click to choose one",
+    "hint": "Drop a .txt, .srt, .epub, .docx or .pdf file here, or click to choose one",
     "active": "Drop the file to load it",
-    "unsupported": "Only .txt, .srt and .epub files are supported",
-    "hintRefine": "Drop a translated .txt, .srt or .epub file here, or click to choose one"
+    "unsupported": "Only .txt, .srt, .epub, .docx and .pdf files are supported",
+    "hintRefine": "Drop a translated .txt, .srt, .epub, .docx or .pdf file here, or click to choose one"
   },
   "source": "Source language",
   "target": "Target language",
@@ -67,7 +67,8 @@
     "fallback_untranslated": "A passage could not be translated and stays in the source language",
     "replace_body_error": "A chapter could not be rebuilt and was left as in the source",
     "epub_file_not_found": "A chapter listed in the book was not found and was skipped",
-    "epub_xml_error": "A chapter could not be read and was left untranslated"
+    "epub_xml_error": "A chapter could not be read and was left untranslated",
+    "pdf_no_text": "The PDF has no text layer (is it a scan?), so there is nothing to translate"
   },
   "style_select": "Style",
   "glossary_select": "Glossary",
