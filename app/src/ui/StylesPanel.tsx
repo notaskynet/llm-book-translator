@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { library } from '@/checkpoint';
 import { serializePreset, slugifyPresetName, type Preset } from '@/presets/format';
 import { useTranslationOptions } from '@/store/translation';
@@ -43,6 +43,7 @@ export function StylesPanel() {
   return (
     <section className="space-y-4 rounded-lg border p-4">
       <h2 className="font-medium">{t('title')}</h2>
+      <p className="text-sm text-gray-600"><Trans t={t} i18nKey="tab_intro" components={{ strong: <strong /> }} /></p>
       <div className="flex flex-wrap gap-2 text-sm">
         <button className="rounded bg-accent px-3 py-1 text-accent-fg" onClick={() => setExtracting(true)}>{t('new_from_books')}</button>
         <button className="rounded border px-3 py-1" onClick={() => setEditing('new')}>{t('new_blank')}</button>

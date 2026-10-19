@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { library } from '@/checkpoint';
 import { glossaryToJson, parseGlossaryFile, termsToCsv } from '@/glossary/io';
 import { NameConflictError } from '@/library/store';
@@ -72,6 +72,7 @@ export function GlossariesPanel() {
   return (
     <section className="space-y-4 rounded-lg border p-4">
       <h2 className="font-medium">{t('title')}</h2>
+      <p className="text-sm text-gray-600"><Trans t={t} i18nKey="list_intro" components={{ strong: <strong /> }} /></p>
       <div className="flex flex-wrap items-end gap-2 text-sm">
         <label>
           {t('name_label')}
