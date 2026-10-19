@@ -106,7 +106,7 @@ test('a glossary is edited, assigned, and its matching terms reach the model', a
   await table.getByRole('textbox', { name: 'Source' }).fill('Paragraph 3');
   await table.getByRole('textbox', { name: 'Target' }).fill('Abschnitt 3');
   await table.getByRole('combobox', { name: 'Category' }).selectOption('item');
-  await expect(page.getByText('Saved')).toBeVisible();
+  await expect(page.getByText('Saved', { exact: true })).toBeVisible();
 
   // Persisted: survives leaving the editor.
   await page.getByRole('button', { name: /← Glossaries/ }).click();
