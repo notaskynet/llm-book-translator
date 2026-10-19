@@ -63,9 +63,9 @@ function pageParagraphs(lines: Line[], normal: number): string[] {
 }
 
 async function loadPdfjs() {
-  const pdfjs = await import('pdfjs-dist');
+  const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
   if (!pdfjs.GlobalWorkerOptions.workerSrc && !(globalThis as { pdfjsWorker?: unknown }).pdfjsWorker) {
-    pdfjs.GlobalWorkerOptions.workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
+    pdfjs.GlobalWorkerOptions.workerSrc = (await import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url')).default;
   }
   return pdfjs;
 }

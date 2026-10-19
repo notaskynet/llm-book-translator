@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WorkerMessageHandler } from 'pdfjs-dist/build/pdf.worker.mjs';
+import { WorkerMessageHandler } from 'pdfjs-dist/legacy/build/pdf.worker.mjs';
 import { extractPdfText } from '../src/documents/pdf';
 import { createAdapter, mimeTypeFor, outputFileName, refinedFileName } from '../src/formats';
 import { translateJob } from '../src/translate/generic';
