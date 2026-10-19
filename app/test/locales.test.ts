@@ -15,22 +15,23 @@ function flatten(obj: Record<string, unknown>, prefix = ''): Record<string, stri
 
 const placeholders = (s: string) => (s.match(/{{\s*\w+\s*}}/g) ?? []).sort();
 
-// `common` also holds strings of the legacy UI that the app no longer uses; only the keys
-// the app reads are held to parity.
-const REQUIRED_COMMON_KEYS = ['language'];
+// Plural variants differ per language (Russian has four): a literal "1" in English may be
+// "{{count}}" in another language, so only the other placeholders are compared.
+const isPlural = (key: string) => /_(zero|one|two|few|many|other)$/.test(key);
+const comparable = (key: string, s: string) => placeholders(s).filter((p) => !(isPlural(key) && /count/.test(p)));
 
 describe('locale files', () => {
   for (const ns of NAMESPACES) {
     describe(ns, () => {
       const en = flatten(load('en', ns));
-      const keys = ns === 'common' ? REQUIRED_COMMON_KEYS : Object.keys(en);
+      const keys = Object.keys(en);
 
       for (const lng of LOCALES.filter((l) => l !== 'en')) {
         it(`${lng} has every English key with the same placeholders`, () => {
           const other = flatten(load(lng, ns));
           for (const key of keys) {
             expect(other[key], `${lng}/${ns}:${key}`).toBeTruthy();
-            expect(placeholders(other[key]), `${lng}/${ns}:${key}`).toEqual(placeholders(en[key]));
+            expect(comparable(key, other[key]), `${lng}/${ns}:${key}`).toEqual(comparable(key, en[key]));
           }
         });
       }

@@ -1,6 +1,8 @@
 import { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LOCALES } from './i18n';
+import { Monitor, Moon, Sun } from 'lucide-react';
+import { LOCALES, LOCALE_NAMES } from './i18n';
+import { THEMES, useTheme, type Theme } from './theme';
 import { ConnectionPanel } from './ui/ConnectionPanel';
 import { GlossariesPanel } from './ui/GlossariesPanel';
 import { SamplePanel } from './ui/SamplePanel';
@@ -14,25 +16,57 @@ const TABS = [
   { id: 'sample', ns: 'sample', label: 'title' },
 ] as const;
 
+const THEME_ICONS = { system: Monitor, light: Sun, dark: Moon } as const;
+
+function ThemeToggle() {
+  const { t } = useTranslation();
+  const { theme, set } = useTheme();
+  return (
+    <div role="group" aria-label={t('theme')} className="flex rounded-md border bg-surface p-0.5">
+      {THEMES.map((value: Theme) => {
+        const Icon = THEME_ICONS[value];
+        const label = t(`theme_${value}`);
+        return (
+          <button
+            key={value}
+            type="button"
+            title={label}
+            aria-label={label}
+            aria-pressed={theme === value}
+            className={`rounded p-1.5 ${theme === value ? 'bg-accent text-accent-fg' : 'text-gray-600'}`}
+            onClick={() => set(value)}
+          >
+            <Icon size={16} aria-hidden />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function App() {
   const { t, i18n } = useTranslation();
   const [tab, setTab] = useState<(typeof TABS)[number]['id']>('translate');
   return (
     <Suspense fallback={null}>
-      <main className="mx-auto max-w-2xl space-y-6 p-6">
-        <header className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">LLM Book Translator</h1>
-          <label className="flex items-center gap-2 text-sm">
-            {t('language')}
+      <main className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:px-6">
+        <header className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="flex items-center gap-2 text-xl font-semibold">
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-7 w-7" />
+            LLM Book Translator
+          </h1>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
             <select
               aria-label={t('language')}
-              className="rounded border px-2 py-1"
+              title={t('language')}
+              className="rounded-md border px-2 py-1 text-sm"
               value={i18n.resolvedLanguage}
               onChange={(e) => void i18n.changeLanguage(e.target.value)}
             >
-              {LOCALES.map((l) => <option key={l} value={l}>{l}</option>)}
+              {LOCALES.map((l) => <option key={l} value={l}>{LOCALE_NAMES[l]}</option>)}
             </select>
-          </label>
+          </div>
         </header>
         <ConnectionPanel />
         <div role="tablist" aria-label={t('translate:tabs')} className="flex gap-2 border-b">
@@ -41,7 +75,7 @@ export function App() {
               key={x.id}
               role="tab"
               aria-selected={tab === x.id}
-              className={`-mb-px border-b-2 px-3 py-2 text-sm ${tab === x.id ? 'border-black font-medium' : 'border-transparent text-gray-600'}`}
+              className={`-mb-px border-b-2 px-4 py-2 text-sm transition-colors ${tab === x.id ? 'border-accent font-medium' : 'border-transparent text-gray-600 hover:text-[var(--text)]'}`}
               onClick={() => setTab(x.id)}
             >
               {t(`${x.ns}:${x.label}`)}

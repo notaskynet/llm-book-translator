@@ -77,7 +77,7 @@ export function ConnectionPanel() {
       </label>
 
       <div className="flex gap-2">
-        <button className="rounded bg-black px-3 py-1 text-sm text-white disabled:opacity-50" disabled={busy || !apiKey} onClick={load}>
+        <button className="rounded bg-accent px-3 py-1 text-sm text-accent-fg disabled:opacity-50" disabled={busy || !apiKey} onClick={load}>
           {t('loadModels')}
         </button>
       </div>

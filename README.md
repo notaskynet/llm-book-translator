@@ -22,8 +22,8 @@ commit that still contains it is `ff1cb51`.
 - **Glossaries:** per-term translations (with CSV import and export) and LLM-assisted discovery of recurring names.
 - **Refine:** an optional second pass that polishes a finished translation, or an already translated file.
 - **Sample & Compare:** run representative excerpts through several models, styles or glossaries and diff the results.
-- **Bilingual output**, parallel requests, API key rotation on rate limits, and a UI in 7 languages
-  (English, French, Spanish, German, Chinese, Japanese, Korean).
+- **Bilingual output**, parallel requests, API key rotation on rate limits, and a light/dark/system theme and a UI in 8 languages
+  (English, Russian, French, Spanish, German, Chinese, Japanese, Korean).
 
 Not included: text-to-speech, local providers such as Ollama, OCR for scanned PDFs.
 

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { library } from '@/checkpoint';
 import { glossaryToJson, parseGlossaryFile, termsToCsv } from '@/glossary/io';
 import { NameConflictError } from '@/library/store';
@@ -72,12 +72,13 @@ export function GlossariesPanel() {
   return (
     <section className="space-y-4 rounded-lg border p-4">
       <h2 className="font-medium">{t('title')}</h2>
+      <p className="text-sm text-gray-600"><Trans t={t} i18nKey="list_intro" components={{ strong: <strong /> }} /></p>
       <div className="flex flex-wrap items-end gap-2 text-sm">
         <label>
           {t('name_label')}
           <input className="mt-1 block rounded border px-2 py-1" value={newName} onChange={(e) => setNewName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void create()} />
         </label>
-        <button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={!newName.trim()} onClick={() => void create()}>{t('new_glossary')}</button>
+        <button className="rounded bg-accent px-3 py-1 text-accent-fg disabled:opacity-50" disabled={!newName.trim()} onClick={() => void create()}>{t('new_glossary')}</button>
         <button className="rounded border px-3 py-1" onClick={() => importRef.current?.click()}>{t('import_csv_json')}</button>
         <input ref={importRef} type="file" hidden accept=".csv,.json" aria-label={t('import_csv_json')} onChange={(e) => void importAsNew(e.target.files?.[0])} />
       </div>
@@ -97,7 +98,7 @@ export function GlossariesPanel() {
                 </span>
                 <span className="flex gap-2">
                   <button
-                    className={`rounded border px-2 py-1 ${active ? 'bg-black text-white' : ''}`}
+                    className={`rounded border px-2 py-1 ${active ? 'bg-accent text-accent-fg' : ''}`}
                     aria-pressed={active}
                     title={active ? t('unassign_title') : t('assign_title')}
                     onClick={() => { set({ glossaryId: active ? null : g.id! }); setMessage({ text: t(active ? 'unassigned_msg' : 'assigned_msg', { name: g.name }) }); }}

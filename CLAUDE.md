@@ -38,13 +38,13 @@ credential in a source file, test, script, comment, doc example or commit messag
 ## i18n rules - every user-facing string must be translated
 
 The UI uses `react-i18next`; locales live in `app/public/locales/<lang>/<namespace>.json` for
-`en`, `fr`, `es`, `de`, `zh-CN`, `ja`, `ko`. Components re-render on language change, so reactivity comes for free
+`en`, `ru`, `fr`, `es`, `de`, `zh-CN`, `ja`, `ko`. Components re-render on language change, so reactivity comes for free
 as long as strings go through `t()`.
 
 - Never write raw human text into JSX, `aria-label`, `title`, `placeholder`, `alert()` or error banners. Use
   `const { t } = useTranslation('<namespace>')` and a key.
 - Do not cache `t(...)` results in module-scope constants; call it during render.
-- A new key goes into all 7 locale files of its namespace in the same commit. English is the source of truth;
+- A new key goes into all 8 locale files of its namespace in the same commit. English is the source of truth;
   keep every `{{placeholder}}` identical across languages.
 - `test/locales.test.ts` (key and placeholder parity) and `test/i18nKeys.test.ts` (every literal `t('key')` in
   `src/ui` exists in `en`) enforce this; keep them green.

@@ -75,7 +75,7 @@ export function NerDialog({ glossary, onClose, onAdded }: { glossary: Glossary; 
                 <input type="number" min={1} max={50} className="mt-1 block w-20 rounded border px-2 py-1" value={sampleCount} onChange={(e) => setSampleCount(Math.min(50, Math.max(1, Number(e.target.value) || 10)))} />
               </label>
             </div>
-            <button className="rounded bg-black px-3 py-1 text-white disabled:opacity-50" disabled={busy} onClick={() => void run()}>
+            <button className="rounded bg-accent px-3 py-1 text-accent-fg disabled:opacity-50" disabled={busy} onClick={() => void run()}>
               {busy ? t('ner_extracting') : t('ner_extract_btn')}
             </button>
           </>
@@ -98,7 +98,7 @@ export function NerDialog({ glossary, onClose, onAdded }: { glossary: Glossary; 
                 ))}
               </tbody>
             </table>
-            <button className="rounded bg-black px-3 py-1 text-white" onClick={() => void add()}>{t('ner_add_selected')}</button>
+            <button className="rounded bg-accent px-3 py-1 text-accent-fg" onClick={() => void add()}>{t('ner_add_selected')}</button>
           </>
         )}
         {error && <p role="alert" className="text-red-700">{error}</p>}

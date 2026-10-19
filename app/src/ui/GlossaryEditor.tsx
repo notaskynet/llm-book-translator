@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { library } from '@/checkpoint';
 import { glossaryToJson, parseGlossaryFile, termsToCsv } from '@/glossary/io';
 import { normalizeGender, type Glossary, type GlossaryTerm } from '@/glossary/models';
@@ -162,6 +162,7 @@ export function GlossaryEditor({ glossaryId, onBack, onDeleted }: { glossaryId: 
           </tbody>
         </table>
       )}
+      <p className="text-xs text-gray-600"><Trans t={t} i18nKey="inflected_forms_hint" components={{ code: <code /> }} /></p>
       <p className="text-xs text-gray-600">{t('autosave_hint')}</p>
 
       {dialog === 'ner' && <NerDialog glossary={{ ...glossary, terms: rows.map(strip) }} onClose={() => setDialog(null)} onAdded={(text) => { setMessage({ text }); void reload(); }} />}

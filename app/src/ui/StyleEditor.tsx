@@ -111,7 +111,7 @@ export function StyleEditor({ preset, onClose, onSaved }: { preset: Preset | nul
         {error && <p role="alert" className="text-red-700">{error}</p>}
         <div className="flex justify-end gap-2">
           <button className="rounded border px-3 py-1" onClick={onClose}>{tc('cancel')}</button>
-          <button className="rounded bg-black px-3 py-1 text-white" onClick={() => void save()}>{tc('save')}</button>
+          <button className="rounded bg-accent px-3 py-1 text-accent-fg" onClick={() => void save()}>{tc('save')}</button>
         </div>
       </div>
     </Modal>
