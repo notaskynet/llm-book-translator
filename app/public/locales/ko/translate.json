@@ -78,5 +78,7 @@
   "task_refine": "기존 번역 다듬기",
   "refine_after": "번역 후 다듬기(두 번째 패스)",
   "file_language": "파일 언어",
-  "download_draft": "다듬기 전 번역 다운로드"
+  "download_draft": "다듬기 전 번역 다운로드",
+  "start": "번역",
+  "start_refine": "다듬기"
 }

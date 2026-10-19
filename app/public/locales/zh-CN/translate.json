@@ -78,5 +78,7 @@
   "task_refine": "润色已有译文",
   "refine_after": "翻译后再润色（第二遍）",
   "file_language": "文件语言",
-  "download_draft": "下载润色前的译文"
+  "download_draft": "下载润色前的译文",
+  "start": "翻译",
+  "start_refine": "润色"
 }

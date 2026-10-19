@@ -61,3 +61,11 @@ export async function connect(page: Page) {
 
 export const file = (name = 'book.txt', text = book) => ({ name, mimeType: 'text/plain', buffer: Buffer.from(text) });
 
+
+type Upload = Parameters<ReturnType<Page['locator']>['setInputFiles']>[0];
+
+/** Chooses a file in the Translate tab and starts the job (a chosen file waits for the button). */
+export async function upload(page: Page, files: Upload) {
+  await page.locator('input[type=file]').setInputFiles(files);
+  await page.getByRole('button', { name: /^(Translate|Polish)$/ }).click();
+}

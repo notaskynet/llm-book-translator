@@ -78,5 +78,7 @@
   "task_refine": "既存の翻訳を推敲する",
   "refine_after": "翻訳後に推敲する（2回目のパス）",
   "file_language": "ファイルの言語",
-  "download_draft": "推敲前の翻訳をダウンロード"
+  "download_draft": "推敲前の翻訳をダウンロード",
+  "start": "翻訳する",
+  "start_refine": "推敲する"
 }

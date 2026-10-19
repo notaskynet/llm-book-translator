@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import JSZip from 'jszip';
-import { connect, file, mockLlm } from './helpers';
+import { connect, file, mockLlm, upload } from './helpers';
 
 const goTo = (page: import('@playwright/test').Page, tab: 'Translate' | 'Styles' | 'Glossaries') =>
   page.getByRole('tab', { name: tab }).click();
@@ -25,7 +25,7 @@ test('a style created in the editor is sent with every translation request', asy
   await goTo(page, 'Translate');
   await expect(page.getByLabel('Style', { exact: true })).toHaveValue('Dry_noir');
 
-  await page.locator('input[type=file]').setInputFiles(file());
+  await upload(page, file());
   await expect(page.getByRole('status').last()).toContainText('Done');
   expect(record.length).toBeGreaterThan(1);
   for (const r of record) {
@@ -115,7 +115,7 @@ test('a glossary is edited, assigned, and its matching terms reach the model', a
   await page.getByRole('button', { name: /Assign to translation/ }).click();
 
   await goTo(page, 'Translate');
-  await page.locator('input[type=file]').setInputFiles(file());
+  await upload(page, file());
   await expect(page.getByRole('status').last()).toContainText('Done');
 
   const matching = record.filter((r) => /<SOURCE_TEXT>[\s\S]*Paragraph 3\.[\s\S]*<\/SOURCE_TEXT>/.test(r.user));
@@ -192,7 +192,7 @@ test('an EPUB is translated with a glossary applied', async ({ page }) => {
 
   await goTo(page, 'Translate');
   const { buildEpub } = await import('../test/epubFixture');
-  await page.locator('input[type=file]').setInputFiles({ name: 'novel.epub', mimeType: 'application/epub+zip', buffer: Buffer.from(await buildEpub()) });
+  await upload(page, { name: 'novel.epub', mimeType: 'application/epub+zip', buffer: Buffer.from(await buildEpub()) });
   await expect(page.getByRole('status').last()).toContainText('Done');
   expect(record.some((r) => r.user.includes('Chapter One -> Chapitre Premier'))).toBe(true);
 
@@ -216,7 +216,7 @@ test('a translation is polished in a second pass, and the draft stays available'
   await page.getByText('Options').click();
   await page.getByLabel('Polish the translation afterwards (second pass)').check();
 
-  await page.locator('input[type=file]').setInputFiles(file());
+  await upload(page, file());
   await expect(page.getByRole('status').last()).toContainText('Done');
 
   const refineCalls = record.filter((r) => r.system.includes('literary editor'));
@@ -250,7 +250,7 @@ test('an already translated file can be polished on its own', async ({ page }) =
   await page.getByLabel('Polish an existing translation').check();
   await expect(page.getByLabel('Source language')).toHaveCount(0); // only the file's own language is asked for
 
-  await page.locator('input[type=file]').setInputFiles(file('translated.txt'));
+  await upload(page, file('translated.txt'));
   await expect(page.getByRole('status').last()).toContainText('Done');
   expect(record.every((r) => r.system.includes('literary editor'))).toBe(true);
 
